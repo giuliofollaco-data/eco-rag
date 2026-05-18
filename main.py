@@ -1,5 +1,6 @@
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
+from vector import get_retrieved_context
 
 model = OllamaLLM(model="llama3.2")
 
@@ -40,8 +41,13 @@ while True:
     if question.lower() == "q":
         break
 
-    context = None
+    # Remplacement de context = None par la recherche dans Chroma
+    print("Recherche des informations dans le rapport...")
+    context = get_retrieved_context(
+        question, k=5
+    )  # Tu peux ajuster 'k' selon la taille du contexte voulue
 
+    print("Génération de la réponse...")
     response = chain.invoke({"context": context, "question": question})
     print(response)
     print("\n" + "-" * 50 + "\n")
