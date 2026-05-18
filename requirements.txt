@@ -1,3 +1,6 @@
 langchain
 langchain-ollama
 langchain-chroma
+langchain-community
+langchain-text-splitters
+pypdf
