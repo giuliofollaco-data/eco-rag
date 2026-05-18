@@ -1,9 +1,23 @@
-# eco-rag
+# IPCC AR6 Chatbot - RAG avec Ollama & LangChain
 
-## Titre
-
-Optimisation d'un système de réponse aux questions par recherche hybride et re-ranking local sur le rapport du GIEC 2023
+Ce projet implémente un système de génération à enrichissement contextuel (RAG) permettant d'interroger localement le rapport de synthèse 2023 du GIEC (AR6). L'objectif est d'extraire des données climatiques précises tout en limitant les hallucinations du modèle grâce à un contexte sourcé.
 
 ## Problématique
 
-Comment concevoir un système de Retrieval-Augmented Generation (RAG) capable de garantir la fidélité factuelle et l'extraction de données complexes (tableaux, chiffres, nuances de probabilité) à partir de documents volumineux et denses, tout en fonctionnant de manière souveraine et performante sur une machine locale ?
+Comment concevoir un système de RAG capable de garantir la fidélité factuelle et l'extraction de données complexes (graphiques, tableaux, chiffres, nuances de probabilité) à partir de documents volumineux et denses, tout en fonctionnant de manière souveraine et performante sur une machine locale ?
+
+## Concept technique
+
+Le système repose sur l'architecture RAG, qui combine la puissance de raisonnement des Large Language Models (LLM) avec la fiabilité de données externes spécifiques. Contrairement à un chatbot classique, ce moteur :
+1. Indexe le rapport PDF du GIEC en fragments vectoriels (Embeddings).
+2. Recherche les passages les plus pertinents pour chaque question utilisateur via une base de données vectorielle (ChromaDB).
+3. Génère une réponse en français, strictement basée sur les extraits récupérés, garantissant ainsi la précision scientifique.
+
+## Framework
+
+1. RTX 3070, 16GB RAM
+1. Orchestration : LangChain
+1. LLM Local : Ollama (Modèle llama3.2)
+1. Embeddings : mxbai-embed-large
+1. Base Vectorielle : ChromaDB
+1. Langage : Python 3.10+
