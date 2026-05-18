@@ -15,9 +15,9 @@ Le système repose sur l'architecture RAG, qui combine la puissance de raisonnem
 
 ## Framework
 
-1. RTX 3070, 16GB RAM
-1. Orchestration : LangChain
-1. LLM Local : Ollama (Modèle llama3.2)
-1. Embeddings : mxbai-embed-large
-1. Base Vectorielle : ChromaDB
-1. Langage : Python 3.10+
+* RTX 3070, 16GB RAM
+* Orchestration : LangChain
+* LLM Local : Ollama (Modèle llama3.2)
+* Embeddings : mxbai-embed-large
+* Base Vectorielle : ChromaDB
+* Langage : Python 3.10+
