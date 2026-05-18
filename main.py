@@ -41,11 +41,11 @@ while True:
     if question.lower() == "q":
         break
 
-    # Remplacement de context = None par la recherche dans Chroma
+    # Ajout du contexte par la recherche dans Chroma
     print("Recherche des informations dans le rapport...")
     context = get_retrieved_context(
         question, k=5
-    )  # Tu peux ajuster 'k' selon la taille du contexte voulue
+    )  # Récupère les 5 fragments les plus pertinents
 
     print("Génération de la réponse...")
     response = chain.invoke({"context": context, "question": question})
