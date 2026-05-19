@@ -4,31 +4,9 @@ from vector import get_retrieved_context
 
 model = OllamaLLM(model="llama3.2", temperature=0.0)
 
-
-# ── 1. Prompt d'expansion de requête ───────────────────────────────────────────
-
-EXPAND_TEMPLATE = """
-<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-
-Tu es un expert en recherche documentaire sur les rapports scientifiques du GIEC.
-Ta tâche est de formuler exactement 3 requêtes de recherche complémentaires, \
-une par ligne, sans numérotation, sans explication, sans texte autour.
-
-Les 3 requêtes doivent couvrir :
-1. La donnée précise demandée (chiffre, mesure, date)
-2. La conclusion générale du rapport sur ce sujet (résumé, bilan, certitude)
-3. La même requête qu'en 1, traduite en anglais
-
-<|eot_id|><|start_header_id|>user<|end_header_id|>
-Question : {question}
-<|eot_id|><|start_header_id|>assistant<|end_header_id|>
-"""
-
-# ── 2. Prompt de génération de réponse ─────────────────────────────────────────
+# ── Prompt de génération de réponse ─────────────────────────────────────────
 
 ANSWER_TEMPLATE = """
-<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-
 Tu es un assistant expert en science du climat, spécialisé dans le rapport de \
 synthèse 2023 du GIEC (AR6 SYR).
 
@@ -65,8 +43,6 @@ entre crochets la page source, ex : [p. 12, SPM].
 "Les extraits fournis ne permettent pas de répondre à cette question."
 - Ne fais jamais appel à tes connaissances externes.
 
-<|eot_id|><|start_header_id|>user<|end_header_id|>
-
 CONTEXTE :
 {context}
 
@@ -75,46 +51,27 @@ CONTEXTE :
 QUESTION :
 {question}
 
-Réponse en français :<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+Réponse en français :
 """
 
-expand_prompt = ChatPromptTemplate.from_template(EXPAND_TEMPLATE)
 answer_prompt = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
-
-expand_chain = expand_prompt | model
 answer_chain = answer_prompt | model
 
 
 # ── Fonctions utilitaires ───────────────────────────────────────────────────────
 
 
-def expand_queries(question: str) -> list[str]:
-    """Génère des sous-requêtes complémentaires via le LLM."""
-    raw = expand_chain.invoke({"question": question})
-    sub_queries = [q.strip() for q in raw.strip().split("\n") if q.strip()]
-    return [question] + sub_queries[:3]
-
-
-def gather_context(question: str, k_per_query: int = 5) -> str:
+def gather_context(question: str, k: int = 5) -> str:
     """
-    Multi-query retrieval :
-    - Lance un retrieval pour chaque sous-requête
-    - Déduplique les chunks entre les requêtes
+    Retrieval :
+    - Lance un retrieval pour la requête
     - Retourne au maximum 12 chunks pour ne pas dépasser la fenêtre de contexte
     """
-    queries = expand_queries(question)
-    print(f"[INFO] {len(queries)} requête(s) utilisées :")
-    for i, q in enumerate(queries):
-        print(f"  [{i+1}] {q}")
 
-    seen, all_chunks = set(), []
-    for q in queries:
-        context_block = get_retrieved_context(q, k=k_per_query)
-        for chunk in context_block.split("\n\n---\n\n"):
-            key = chunk[:120]
-            if key not in seen:
-                seen.add(key)
-                all_chunks.append(chunk)
+    all_chunks = []
+    context_block = get_retrieved_context(question, k)
+    for chunk in context_block.split("\n\n---\n\n"):
+        all_chunks.append(chunk)
 
     print(
         f"[INFO] {len(all_chunks)} fragments uniques récupérés (max 12 envoyés au LLM)."
@@ -139,7 +96,6 @@ if __name__ == "__main__":
             print("Au revoir.")
             break
 
-        print("→ Expansion de la requête...")
         print("→ Recherche dans le rapport...")
         context = gather_context(question)
 

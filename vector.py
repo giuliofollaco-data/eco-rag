@@ -16,8 +16,9 @@ PDF_PATH = "IPCC_AR6_SYR_FullVolume.pdf"
 CHROMA_PATH = "chroma_db"
 CHUNKS_CACHE = "chunks_cache.pkl"
 
-# Chunks de 800 caracteres avec 200 caracteres de recouvrement pour garder du contexte entre les fragments.
-# Ce choix est empirique : il permet de limiter le nombre de chunks entrée de mxbai-embed-large (2048 tokens) tout en conservant une cohérence suffisante dans les fragments.
+# Chunks de 8000 caracteres avec 200 caracteres de recouvrement pour garder du contexte entre les fragments.
+# Ce choix est empirique : il permet de limiter le nombre de chunks entrée de mxbai-embed-large (2048 tokens)
+# tout en conservant une cohérence suffisante dans les fragments.
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 200
 
@@ -98,6 +99,7 @@ def _build_ensemble_retriever(k: int) -> EnsembleRetriever:
     - Dense (semantique) : capture les paraphrases et synonymes
     - BM25  (lexical)    : capture les termes exacts, unites, chiffres precis
 
+    Fusion des signaux par Retrival Rank Fusion (RRF)
     Le poids BM25 de 0.4 est volontairement eleve pour les questions numeriques,
     ou la correspondance lexicale est plus fiable que la similarite vectorielle.
     """
@@ -120,20 +122,20 @@ def _deduplicate(docs: List[Document]) -> List[Document]:
         if key not in seen:
             seen.add(key)
             unique.append(doc)
+    print(f"[INFO] Deduplication : {len(docs)} -> {len(unique)} fragments.")
     return unique
 
 
 # ── Point d'entree public ───────────────────────────────────────────────────────
 
 
-def get_retrieved_context(query: str, k: int = 6) -> str:
+def get_retrieved_context(query: str, k: int) -> str:
     """
     Strategie de retrieval a deux niveaux :
 
     Niveau 1 — Retrieval hybride (dense + BM25) sur la requete.
-    Niveau 2 — Injection de chunks SPM supplementaires si le niveau 1
-               n'en a pas remonte assez (garantit la presence des
-               conclusions globales du rapport dans le contexte).
+    Niveau 2 — Injection de chunks SPM supplementaires si le niveau 1 n'en a pas remonte assez
+    (garantit la presence des conclusions globales du rapport dans le contexte).
 
     Chaque chunk est prefixe de sa page et de sa section pour permettre
     au LLM de hierarchiser les sources.
