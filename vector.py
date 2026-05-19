@@ -16,8 +16,8 @@ PDF_PATH = "IPCC_AR6_SYR_FullVolume.pdf"
 CHROMA_PATH = "chroma_db"
 CHUNKS_CACHE = "chunks_cache.pkl"
 
-# Chunks plus larges qu'en v1 (1 000 -> 1 500 chars) pour que les chiffres
-# conservent leur contexte (phrase precedente + phrase suivante).
+# Chunks de 800 caracteres avec 200 caracteres de recouvrement pour garder du contexte entre les fragments.
+# Ce choix est empirique : il permet de limiter le nombre de chunks entrée de mxbai-embed-large (2048 tokens) tout en conservant une cohérence suffisante dans les fragments.
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 200
 
