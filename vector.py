@@ -16,7 +16,7 @@ PDF_PATH = "IPCC_AR6_SYR_FullVolume.pdf"
 CHROMA_PATH = "chroma_db"
 CHUNKS_CACHE = "chunks_cache.pkl"
 
-# Chunks de 8000 caracteres avec 200 caracteres de recouvrement pour garder du contexte entre les fragments.
+# Chunks de 800 caracteres avec 200 caracteres de recouvrement pour garder du contexte entre les fragments.
 # Ce choix est empirique : il permet de limiter le nombre de chunks entrée de mxbai-embed-large (2048 tokens)
 # tout en conservant une cohérence suffisante dans les fragments.
 CHUNK_SIZE = 800
@@ -129,21 +129,21 @@ def _deduplicate(docs: List[Document]) -> List[Document]:
 # ── Point d'entree public ───────────────────────────────────────────────────────
 
 
-def get_retrieved_context(query: str, k: int) -> str:
+def get_retrieved_context(query: str, k: int = 5, max_chunks: int = 12) -> str:
     """
-    Strategie de retrieval a deux niveaux :
+    Stratégie de retrieval à deux niveaux :
 
-    Niveau 1 — Retrieval hybride (dense + BM25) sur la requete.
-    Niveau 2 — Injection de chunks SPM supplementaires si le niveau 1 n'en a pas remonte assez
-    (garantit la presence des conclusions globales du rapport dans le contexte).
+    Niveau 1 — Retrieval hybride (dense + BM25) sur la requête.
+    Niveau 2 — Injection de chunks SPM supplémentaires si le niveau 1 n'en a pas remonté assez
+    (garantit la présence des conclusions globales du rapport dans le contexte).
 
-    Chaque chunk est prefixe de sa page et de sa section pour permettre
-    au LLM de hierarchiser les sources.
+    Chaque chunk est préfixé de sa page et de sa section pour permettre
+    au LLM de hiérarchiser les sources.
     """
     retriever = _build_ensemble_retriever(k)
     results = _deduplicate(retriever.invoke(query))
 
-    # Injection de securite : toujours au moins 2 chunks SPM
+    # Injection de sécurité : toujours au moins 2 chunks SPM
     spm_count = sum(1 for d in results if d.metadata.get("section_type") == "SPM")
 
     if spm_count < 2:
@@ -155,9 +155,14 @@ def get_retrieved_context(query: str, k: int) -> str:
                 results.append(doc)
                 existing_keys.add(doc.page_content[:120])
 
-    # Formatage avec metadonnees sources
+    # Log info du nombre de fragments récupérés (anciennement dans gather_context)
+    print(
+        f"[INFO] {len(results)} fragments uniques récupérés (max {max_chunks} envoyés au LLM)."
+    )
+
+    # Formatage avec métadonnées sources (limité directement à max_chunks)
     parts = []
-    for doc in results[:k]:
+    for doc in results[:max_chunks]:
         page = doc.metadata.get("page", "?")
         section = doc.metadata.get("section_type", "corps")
         label = f"[Page {page} — {section.upper()}]"

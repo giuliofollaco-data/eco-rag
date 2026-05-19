@@ -58,48 +58,26 @@ answer_prompt = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
 answer_chain = answer_prompt | model
 
 
-# ── Fonctions utilitaires ───────────────────────────────────────────────────────
-
-
-def gather_context(question: str, k: int = 5) -> str:
-    """
-    Retrieval :
-    - Lance un retrieval pour la requête
-    - Retourne au maximum 12 chunks pour ne pas dépasser la fenêtre de contexte
-    """
-
-    all_chunks = []
-    context_block = get_retrieved_context(question, k)
-    for chunk in context_block.split("\n\n---\n\n"):
-        all_chunks.append(chunk)
-
-    print(
-        f"[INFO] {len(all_chunks)} fragments uniques récupérés (max 12 envoyés au LLM)."
-    )
-    return "\n\n---\n\n".join(all_chunks[:12])
-
-
 # ── Boucle principale ───────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    print("=" * 60)
-    print("  Assistant GIEC AR6 — v2")
-    print("=" * 60)
+    print("-" * 50)
+    print("  Assistant GIEC AR6")
+    print("-" * 50)
 
     while True:
         question = input(
-            "\nVotre question sur le rapport du GIEC 2023 (ou 'q' pour quitter) : "
+            "\nVotre question sur le rapport du GIEC AR6 ('q' pour quitter) : "
         ).strip()
         print()
 
         if question.lower() == "q":
-            print("Au revoir.")
             break
 
-        print("→ Recherche dans le rapport...")
-        context = gather_context(question)
+        print("Recherche dans le rapport...")
+        context = get_retrieved_context(question)
 
-        print("→ Génération de la réponse...\n")
+        print("Génération de la réponse...\n")
         response = answer_chain.invoke({"context": context, "question": question})
         print(response)
-        print("\n" + "─" * 60)
+        print("\n" + "─" * 50)
