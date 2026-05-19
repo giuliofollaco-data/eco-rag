@@ -5,14 +5,9 @@ from vector import get_retrieved_context
 model = OllamaLLM(model="llama3.2")
 
 
-# ─── 1. Prompt d'expansion de requête ─────────────────────────────────────────
-#
-# Génère 3 sous-requêtes complémentaires pour explorer la question sous
-# trois angles : données précises, conclusion globale, niveau de confiance.
-# Cela corrige le "contresens scientifique" en forçant la remontée de passages
-# de synthèse qui auraient été manqués par la seule requête initiale.
+# ── 1. Prompt d'expansion de requête ───────────────────────────────────────────
 
-EXPAND_TEMPLATE = """\
+EXPAND_TEMPLATE = """
 <|begin_of_text|><|start_header_id|>system<|end_header_id|>
 
 Tu es un expert en recherche documentaire sur les rapports scientifiques du GIEC.
@@ -29,21 +24,15 @@ Question : {question}
 <|eot_id|><|start_header_id|>assistant<|end_header_id|>
 """
 
-# ─── 2. Prompt de génération de réponse ───────────────────────────────────────
-#
-# Règles clés ajoutées vs v1 :
-#   • Priorité explicite aux extraits marqués [SPM] pour les conclusions
-#   • Règle d'arbitrage quand plusieurs chiffres similaires sont présents
-#   • Obligation de citer la page source pour chaque affirmation chiffrée
-#   • Instruction de signaler une nuance locale sans invalider la conclusion SPM
+# ── 2. Prompt de génération de réponse ─────────────────────────────────────────
 
-ANSWER_TEMPLATE = """\
+ANSWER_TEMPLATE = """
 <|begin_of_text|><|start_header_id|>system<|end_header_id|>
 
 Tu es un assistant expert en science du climat, spécialisé dans le rapport de \
 synthèse 2023 du GIEC (AR6 SYR).
 
-Réponds à la question en utilisant UNIQUEMENT les extraits du CONTEXTE ci-dessous.
+Réponds à la question en utilisant UNIQUEMENT les extraits fournis dans la section "CONTEXTE".
 
 Règles strictes — respecte-les dans cet ordre de priorité :
 
@@ -96,31 +85,25 @@ expand_chain = expand_prompt | model
 answer_chain = answer_prompt | model
 
 
-# ─── Fonctions utilitaires ─────────────────────────────────────────────────────
+# ── Fonctions utilitaires ───────────────────────────────────────────────────────
 
 
 def expand_queries(question: str) -> list[str]:
-    """
-    Génère des sous-requêtes complémentaires via le LLM.
-    La question originale est toujours incluse en tête.
-    """
+    """Génère des sous-requêtes complémentaires via le LLM."""
     raw = expand_chain.invoke({"question": question})
     sub_queries = [q.strip() for q in raw.strip().split("\n") if q.strip()]
-    # question originale + jusqu'à 3 sous-requêtes
     return [question] + sub_queries[:3]
 
 
-def gather_context(question: str, k_per_query: int = 3) -> str:
+def gather_context(question: str, k_per_query: int = 5) -> str:
     """
     Multi-query retrieval :
     - Lance un retrieval pour chaque sous-requête
     - Déduplique les chunks entre les requêtes
-    - Tronque le contexte final pour rester sous la limite de tokens de llama3.2
-      (fenêtre de 4 096 tokens ; le prompt système + la question occupent ~600 tokens,
-      ce qui laisse ~3 400 tokens pour le contexte, soit ~2 500 mots / ~14 000 chars).
+    - Retourne au maximum 12 chunks pour ne pas dépasser la fenêtre de contexte
     """
     queries = expand_queries(question)
-    print(f"[INFO] {len(queries)} requete(s) utilisees :")
+    print(f"[INFO] {len(queries)} requête(s) utilisées :")
     for i, q in enumerate(queries):
         print(f"  [{i+1}] {q}")
 
@@ -133,23 +116,13 @@ def gather_context(question: str, k_per_query: int = 3) -> str:
                 seen.add(key)
                 all_chunks.append(chunk)
 
-    # Garde-fou : on assemble les chunks un par un jusqu'a la limite de caracteres.
-    # 14 000 chars ~ 3 400 tokens (ratio ~4 chars/token pour le francais).
-    MAX_CONTEXT_CHARS = 14_000
-    final_chunks, total = [], 0
-    for chunk in all_chunks:
-        if total + len(chunk) > MAX_CONTEXT_CHARS:
-            break
-        final_chunks.append(chunk)
-        total += len(chunk)
-
     print(
-        f"[INFO] {len(final_chunks)}/{len(all_chunks)} fragments envoyes au LLM ({total} chars)."
+        f"[INFO] {len(all_chunks)} fragments uniques récupérés (max 12 envoyés au LLM)."
     )
-    return "\n\n---\n\n".join(final_chunks)
+    return "\n\n---\n\n".join(all_chunks[:12])
 
 
-# ─── Boucle principale ─────────────────────────────────────────────────────────
+# ── Boucle principale ───────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     print("=" * 60)

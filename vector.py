@@ -7,35 +7,35 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_ollama import OllamaEmbeddings
 from langchain_chroma import Chroma
 from langchain_community.retrievers import BM25Retriever
+from langchain_classic.retrievers import EnsembleRetriever
 from langchain_core.documents import Document
 
-# ─── Configuration ─────────────────────────────────────────────────────────────
+# ── Configuration ───────────────────────────────────────────────────────────────
 
 PDF_PATH = "IPCC_AR6_SYR_FullVolume.pdf"
 CHROMA_PATH = "chroma_db"
-CHUNKS_CACHE = "chunks_cache.pkl"  # cache pour ne pas recouper le PDF à chaque run
+CHUNKS_CACHE = "chunks_cache.pkl"
 
-# mxbai-embed-large a une fenetre de 512 tokens (~2 000 chars).
-# On reste a 800 chars pour eviter toute troncature tout en preservant
-# suffisamment de contexte autour des chiffres.
+# Chunks plus larges qu'en v1 (1 000 -> 1 500 chars) pour que les chiffres
+# conservent leur contexte (phrase precedente + phrase suivante).
 CHUNK_SIZE = 800
 CHUNK_OVERLAP = 200
 
-# Pages du Résumé pour Décideurs (SPM) dans l'AR6 SYR FullVolume.
-# Vérification empirique : la page 55 (1-indexé) = 54 (0-indexé) marque
-# la fin du SPM. PyPDFLoader numérote à partir de 0.
+# Pages du Resume pour Decideurs (SPM) dans l'AR6 SYR FullVolume.
+# Verification empirique : la page 55 (1-indexe) = 54 (0-indexe) marque
+# la fin du SPM. PyPDFLoader numerote a partir de 0.
 SPM_MAX_PAGE = 54
 
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
 
-# ─── Chargement & découpage ────────────────────────────────────────────────────
+# ── Chargement & decoupage ──────────────────────────────────────────────────────
 
 
 def _load_and_split() -> List[Document]:
     """
-    Charge le PDF, découpe en chunks et enrichit les métadonnées.
-    Le résultat est mis en cache sur disque pour accélérer les runs suivants.
+    Charge le PDF, decoupe en chunks et enrichit les metadonnees.
+    Le resultat est mis en cache sur disque pour accelerer les runs suivants.
     """
     if os.path.exists(CHUNKS_CACHE):
         print("[INFO] Chargement des chunks depuis le cache disque...")
@@ -45,27 +45,25 @@ def _load_and_split() -> List[Document]:
     if not os.path.exists(PDF_PATH):
         raise FileNotFoundError(f"Le fichier {PDF_PATH} est introuvable.")
 
-    print("[INFO] Chargement et découpage du PDF (première fois, ~quelques minutes)...")
+    print("[INFO] Chargement et decoupage du PDF (premiere fois, ~quelques minutes)...")
     loader = PyPDFLoader(PDF_PATH)
     documents = loader.load()
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP,
-        # Les séparateurs sont ordonnés du plus coarse au plus fin :
-        # on évite de couper en plein milieu d'une phrase contenant un chiffre.
         separators=["\n\n", "\n", ". ", " ", ""],
     )
     chunks = splitter.split_documents(documents)
 
-    # Enrichissement des métadonnées : "SPM" ou "corps"
+    # Enrichissement des metadonnees : "SPM" ou "corps"
     for chunk in chunks:
         page = chunk.metadata.get("page", 9999)
         chunk.metadata["section_type"] = "SPM" if page < SPM_MAX_PAGE else "corps"
 
     n_spm = sum(1 for c in chunks if c.metadata["section_type"] == "SPM")
     print(
-        f"[INFO] {len(chunks)} fragments créés ({n_spm} SPM, {len(chunks)-n_spm} corps)."
+        f"[INFO] {len(chunks)} fragments crees ({n_spm} SPM, {len(chunks)-n_spm} corps)."
     )
 
     with open(CHUNKS_CACHE, "wb") as f:
@@ -74,7 +72,7 @@ def _load_and_split() -> List[Document]:
     return chunks
 
 
-# ─── Base vectorielle ──────────────────────────────────────────────────────────
+# ── Base vectorielle ────────────────────────────────────────────────────────────
 
 
 def get_vector_store() -> Chroma:
@@ -83,67 +81,39 @@ def get_vector_store() -> Chroma:
         return Chroma(persist_directory=CHROMA_PATH, embedding_function=embeddings)
 
     chunks = _load_and_split()
-    print("[INFO] Création de la base vectorielle Chroma...")
+    print("[INFO] Creation de la base vectorielle Chroma...")
     db = Chroma.from_documents(
         documents=chunks, embedding=embeddings, persist_directory=CHROMA_PATH
     )
-    print("[INFO] Base vectorielle créée avec succès.")
+    print("[INFO] Base vectorielle creee avec succes.")
     return db
 
 
-# ─── Retrieval hybride ─────────────────────────────────────────────────────────
+# ── Retrieval hybride ───────────────────────────────────────────────────────────
 
 
-def _reciprocal_rank_fusion(
-    ranked_lists: list[list[Document]],
-    weights: list[float],
-    k_rrf: int = 60,
-) -> list[Document]:
+def _build_ensemble_retriever(k: int) -> EnsembleRetriever:
     """
-    Reciprocal Rank Fusion (RRF) — fusionne N listes de résultats classés
-    sans dépendance externe.
+    Combine deux signaux complementaires :
+    - Dense (semantique) : capture les paraphrases et synonymes
+    - BM25  (lexical)    : capture les termes exacts, unites, chiffres precis
 
-    Score RRF d'un document d dans la liste i :
-        score(d) += weight_i / (k_rrf + rank_i(d))
-
-    k_rrf = 60 est la valeur standard (Cormack et al., 2009) ; elle atténue
-    l'impact des documents très bien classés dans une seule liste.
-    Les listes sont pondérées : dense 0.6 / BM25 0.4 pour favoriser
-    la sémantique tout en gardant la précision lexicale sur les chiffres.
-    """
-    scores: dict[str, float] = {}
-    doc_map: dict[str, Document] = {}
-
-    for ranked_list, weight in zip(ranked_lists, weights):
-        for rank, doc in enumerate(ranked_list, start=1):
-            key = doc.page_content[:120]
-            scores[key] = scores.get(key, 0.0) + weight / (k_rrf + rank)
-            doc_map[key] = doc
-
-    sorted_keys = sorted(scores, key=lambda k: scores[k], reverse=True)
-    return [doc_map[k] for k in sorted_keys]
-
-
-def _hybrid_search(query: str, k: int) -> list[Document]:
-    """
-    Combine deux signaux complémentaires via RRF :
-    - Dense (sémantique) : capture les paraphrases et synonymes
-    - BM25  (lexical)    : capture les termes exacts, unités, chiffres précis
+    Le poids BM25 de 0.4 est volontairement eleve pour les questions numeriques,
+    ou la correspondance lexicale est plus fiable que la similarite vectorielle.
     """
     db = get_vector_store()
     chunks = _load_and_split()
 
-    dense_results = db.similarity_search(query, k=k)
-    bm25_results = BM25Retriever.from_documents(chunks, k=k).invoke(query)
+    dense_retriever = db.as_retriever(search_kwargs={"k": k})
+    bm25_retriever = BM25Retriever.from_documents(chunks, k=k)
 
-    return _reciprocal_rank_fusion(
-        ranked_lists=[dense_results, bm25_results],
-        weights=[0.6, 0.4],
+    return EnsembleRetriever(
+        retrievers=[dense_retriever, bm25_retriever], weights=[0.6, 0.4]
     )
 
 
 def _deduplicate(docs: List[Document]) -> List[Document]:
-    """Supprime les doublons en comparant les 120 premiers caractères de chaque chunk."""
+    """Supprime les doublons en comparant les 120 premiers caracteres de chaque chunk."""
     seen, unique = set(), []
     for doc in docs:
         key = doc.page_content[:120]
@@ -153,24 +123,25 @@ def _deduplicate(docs: List[Document]) -> List[Document]:
     return unique
 
 
-# ─── Point d'entrée public ─────────────────────────────────────────────────────
+# ── Point d'entree public ───────────────────────────────────────────────────────
 
 
 def get_retrieved_context(query: str, k: int = 6) -> str:
     """
-    Stratégie de retrieval à deux niveaux :
+    Strategie de retrieval a deux niveaux :
 
-    Niveau 1 — Retrieval hybride (dense + BM25) sur la requête.
-    Niveau 2 — Injection de chunks SPM supplémentaires si le niveau 1
-               n'en a pas remonté assez (garantit la présence des
+    Niveau 1 — Retrieval hybride (dense + BM25) sur la requete.
+    Niveau 2 — Injection de chunks SPM supplementaires si le niveau 1
+               n'en a pas remonte assez (garantit la presence des
                conclusions globales du rapport dans le contexte).
 
-    Chaque chunk est préfixé de sa page et de sa section pour permettre
-    au LLM de hiérarchiser les sources.
+    Chaque chunk est prefixe de sa page et de sa section pour permettre
+    au LLM de hierarchiser les sources.
     """
-    results = _deduplicate(_hybrid_search(query, k))
+    retriever = _build_ensemble_retriever(k)
+    results = _deduplicate(retriever.invoke(query))
 
-    # ── Injection de sécurité : toujours au moins 2 chunks SPM ──────────────
+    # Injection de securite : toujours au moins 2 chunks SPM
     spm_count = sum(1 for d in results if d.metadata.get("section_type") == "SPM")
 
     if spm_count < 2:
@@ -182,7 +153,7 @@ def get_retrieved_context(query: str, k: int = 6) -> str:
                 results.append(doc)
                 existing_keys.add(doc.page_content[:120])
 
-    # ── Formatage avec métadonnées sources ───────────────────────────────────
+    # Formatage avec metadonnees sources
     parts = []
     for doc in results[:k]:
         page = doc.metadata.get("page", "?")
