@@ -1,0 +1,520 @@
+[Page 1 — SPM]
+# CLIMATE CHANGE 2023
+## Synthesis Report
+
+A Report of the Intergovernmental Panel on Climate Change
+
+---
+
+[Page 170 — CORPS]
+**PARRIQUE**, Timothée
+
+Université Clermont Auvergne
+
+France
+
+
+**PATTNAYAK**, Kanhu Charan
+
+Ministry of Sustainability and Environment
+
+Singapore
+
+
+**154**
+
+
+
+**PEIMANI**, Hooman
+
+International Institute for Asian Studies and Leiden University (The Netherlands)
+
+Canada
+
+
+**PELEJERO**, Carles
+
+ICREA and Institut de Ciències del Mar, CSIC
+
+Spain
+
+
+**PERUGINI**, Lucia
+
+Euro-Mediterranean Center on Climate Change
+
+Italy
+
+
+**PETERS**, Aribert
+
+Bund der Energieverbraucher e.V.
+
+Germany
+
+
+**PETERSON**, Bela
+
+coneva GmbH
+
+Germany
+
+
+**PETTERSSON**, Eva
+
+Royal Swedish Academy of Agriculture and Forestry
+
+Sweden
+
+
+**PINO MAESO**, Alfonso
+
+Ministerio de la Transición Ecológica
+
+Spain
+
+
+**PLAISANCE**, Guillaume
+
+Bordeaux University
+
+France
+
+
+**PLANTON**, Serge
+
+Association Météo et Climat
+
+France
+
+---
+
+[Page 3 — SPM]
+##### CLIMATE CHANGE 2023
+###### Synthesis Report
+
+**Edited by**
+
+
+
+**The Core Writing Team**
+
+Synthesis Report
+
+IPCC
+
+
+**Core Writing Team**
+
+
+
+**Hoesung Lee**
+
+Chairman
+
+IPCC
+
+
+
+**José Romero**
+
+Head, Technical Support Unit
+
+IPCC
+
+---
+
+[Page 3 — SPM]
+**Technical Support Unit for the Synthesis Report**
+
+José Romero (Switzerland), Jinmi Kim (Republic of Korea), Erik F. Haites (Canada), Yonghun Jung (Republic of Korea), Robert
+Stavins (USA), Arlene Birt (USA), Meeyoung Ha (Republic of Korea), Dan Jezreel A. Orendain (Philippines), Lance Ignon (USA),
+Semin Park (Republic of Korea), Youngin Park (Republic of Korea)
+
+
+**Referencing this report:**
+IPCC, 2023: _Climate Change 2023: Synthesis Report._ _Contribution of Working Groups I, II and III to the Sixth Assessment Report_
+_of the Intergovernmental Panel on Climate Change_ [Core Writing Team, H. Lee and J. Romero (eds.)]. IPCC, Geneva, Switzerland,
+184 pp., doi: 10.59327/IPCC/AR6-9789291691647.
+
+---
+
+[Page 135 — CORPS]
+This Annex should be cited as: IPCC, 2023: Annex I: Glossary [Reisinger, A., D. Cammarano, A. Fischlin, J.S. Fuglestvedt, G.
+Hansen, Y. Jung, C. Ludden, V. Masson-Delmotte, R. Matthews, J.B.K Mintenbeck, D.J. Orendain, A. Pirani, E. Poloczanska,
+and J. Romero (eds.)]. In: _Climate Change 2023: Synthesis Report. Contribution of Working Groups I, II and III to the_
+_Sixth Assessment Report of the Intergovernmental Panel on Climate Change_ [Core Writing Team, H. Lee and J. Romero
+(eds.)]. IPCC, Geneva, Switzerland, pp. 119-130, doi:10.59327/IPCC/AR6-9789291691647.002.
+
+
+**119**
+
+---
+
+[Page 164 — CORPS]
+United States of America
+
+
+**FORAMITTI**, Joël
+
+Universitat Autònoma de Barcelona
+
+Spain
+
+
+**FRA PALEO**, Urbano
+
+University of Extremadura
+
+Spain
+
+
+**FRACASSI,** Umberto
+
+Istituto Nazionale di Geofisica e Vulcanologia
+
+Italy
+
+
+**FRÖLICHER**, Thomas
+
+University of Bern
+
+Switzerland
+
+
+**148**
+
+
+
+**FUGLESTVEDT**, Jan
+
+IPCC WGI Vice-Chair
+
+CICERO
+
+Norway
+
+
+**GARCÍA MORA**, Magdalena
+
+ACCIONA ENERGíA
+
+Spain
+
+
+**GARCÍA PORTILLA**, Jason
+
+University of St. Gallen
+
+Switzerland
+
+
+**GARCÍA SOTO**, Carlos
+
+Spanish Institute of Oceanography
+
+Spain
+
+
+**GEDEN**, Oliver
+
+German Institute for International and Security Affairs
+
+Germany
+
+
+**GEHL**, Georges
+
+Ministère du Développement Durable et des Infrastructures
+
+Luxembourg
+
+
+**GIL**, Ramón Vladimir
+
+Catholic University of Peru
+
+Peru
+
+---
+
+[Page 156 — CORPS]
+Annex III
+
+
+**LEY, Debora**
+
+Latinoamérica Renovable, UN ECLAC
+
+Mexico / Guatemala
+
+
+**LUDDEN, Chloé**
+
+WG III Technical Support Unit
+
+Germany / France
+
+
+**NIAMIR, Leila**
+
+International Institute for Applied Systems Analysis
+
+Iran / The Netherlands / Austria
+
+
+**NICHOLLS, Zebedee**
+
+University of Melbourne
+
+Australia
+
+
+**SOME, Shreya**
+
+IPCC WGIII Technical Support Unit
+
+Asian Institute of Technology
+
+India / Thailand
+
+
+**SZOPA, Sophie**
+
+Laboratoire des Sciences du Climat et de l’Environnement
+
+France
+
+
+**TREWIN, Blair**
+
+Australian Bureau of Meteorology
+
+Australia
+
+
+**VAN DER WIJST, Kaj-Ivar**
+
+Netherlands Environmental Assessment Agency
+
+The Netherlands
+
+
+**WINTER, Gundula**
+
+Deltares
+
+The Netherlands / Germany
+
+
+**WITTING, Maximilian**
+
+Ludwig Maximilian University of Munich
+
+Germany
+
+---
+
+[Page 153 — CORPS]
+**LEE, June-Yi**
+
+Pusan National University
+
+Republic of Korea
+
+
+**MASSON-DELMOTTE, Valérie**
+
+IPCC WGI Co-Chair
+
+Laboratoire des sciences du climat et de l’environnement
+
+France
+
+
+**MEINSHAUSEN, Malte**
+
+University of Melbourne
+
+Australia / Germany
+
+
+**MINTENBECK, Katja**
+
+IPCC WGII TSU / Alfred Wegener Institute
+
+Germany
+
+
+**MOKSSIT, Abdalah**
+
+IPCC Secretariat
+
+Morocco / WMO
+
+
+**OTTO, Friederike E. L.**
+
+Imperial College London
+
+United Kingdom (of Great Britain and Northern Ireland) / Germany
+
+
+**PATHAK, Minal**
+
+IPCC WGIII Technical Support Unit
+
+Ahmedabad University
+
+India
+
+
+**PIRANI, Anna**
+
+IPCC WGI Technical Support Unit
+
+Italy
+
+
+**POLOCZANSKA, Elvira**
+
+IPCC WGII Technical Support Unit
+
+United Kingdom (of Great Britain and Northern Ireland) / Australia Germany
+
+---
+
+[Page 164 — CORPS]
+Germany
+
+
+**GEHL**, Georges
+
+Ministère du Développement Durable et des Infrastructures
+
+Luxembourg
+
+
+**GIL**, Ramón Vladimir
+
+Catholic University of Peru
+
+Peru
+
+
+**GONZÁLEZ**, Fernando Antonio Ignacio
+
+IIESS
+
+Argentina
+
+
+**GRANSHAW**, Frank D.
+
+Portland State University
+
+United States of America
+
+
+**GREEN**, Fergus
+
+University College London
+
+United Kingdom (of Great Britain and Northern Ireland)
+
+
+**GREENWALT**, Julie
+
+Go Green for Climate
+
+Netherlands
+
+
+**GRIFFIN**, Emer
+
+Department of Communications, Climate Action and Environment
+
+Ireland
+
+---
+
+[Page 160 — CORPS]
+United Kingdom (of Great Britain and Northern Ireland)
+
+
+**ALSARMI**, Said
+
+Oman Civil Aviation Authority
+
+Oman
+
+
+**AMBRÓSIO**, Luis Alberto
+
+Instituto de Zootecnia
+
+Brazil
+
+
+**AMONI,** Alves Melina
+
+WayCarbon Soluções Ambientais e Projetos de Carbono Ltda
+
+Brazil
+
+
+**ANDRIANASOLO**, Rivoniony
+
+Ministère de l’Environnement et du Développement Durable
+
+Madagascar
+
+
+**144**
+
+
+
+**ANORUO**, Chukwuma
+
+University of Nigeria
+
+Nigeria
+
+
+**ANWAR RATEB**, Samy Ashraf
+
+Egyptian Meteorological Authority
+
+Egypt
+
+
+**APPADOO**, Chandani
+
+University of Mauritius
+
+Mauritius
+
+
+**ARAMENDIA**, Emmanuel
+
+University of Leeds
+
+United Kingdom (of Great Britain and Northern Ireland)
+
+
+**ASADNABIZADEH**, Majid
+
+UMCS
+
+Poland
+
+
+**ÁVILA ROMERO**, Agustín
+
+SEMARNAT
+
+Mexico
+
+
+**BADRUZZAMAN**, Ahmed

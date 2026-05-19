@@ -1,0 +1,93 @@
+[
+  {
+    "id": "T01",
+    "category": "A",
+    "label": "Temp. 2011-2020 vs 1850-1900",
+    "question": "Quelle est l'augmentation de la température mondiale à la surface du globe observée sur la période 2011-2020 par rapport à 1850-1900 ?",
+    "response": "La température mondiale à la surface du globe était de 1,09°C supérieure à celle de 1850-1900 en 2011-2020.",
+    "exact_match": 0,
+    "keyword_score": 0.8,
+    "wrong_avoided": 0,
+    "spm_retrieved": 1,
+    "llm_score": 3,
+    "latency_s": 18.33
+  },
+  {
+    "id": "T02",
+    "category": "A",
+    "label": "Émissions GES 2019",
+    "question": "Quel était le niveau des émissions mondiales nettes de gaz à effet de serre en 2019 selon le rapport ?",
+    "response": "Selon le rapport du GIEC (AR6 SYR), les émissions mondiales nettes de gaz à effet de serre en 2019 étaient de 34% (20 GtCO2-eq) de la part de l'énergie, 24% (14 GtCO2-eq) de l'industrie, 22% (13 GtCO2-eq) des émissions forestières et autres sources non atmosphériques, 15% (8.7 GtCO2-eq) du transport et 6% (3.3 GtCO2-eq) des bâtiments.",
+    "exact_match": 0,
+    "keyword_score": 0.75,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 25.21
+  },
+  {
+    "id": "T03",
+    "category": "A",
+    "label": "Élévation du niveau de la mer 1901-2018",
+    "question": "De combien le niveau moyen mondial de la mer a-t-il augmenté entre 1901 et 2018 ?",
+    "response": "Le niveau moyen mondial de la mer a augmenté de 0,20 m entre 1901 et 2018.",
+    "exact_match": 1,
+    "keyword_score": 0.8,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 3,
+    "latency_s": 25.08
+  },
+  {
+    "id": "T04",
+    "category": "A",
+    "label": "Concentration CO₂ atmosphérique 2019",
+    "question": "Quelle était la concentration de CO2 dans l'atmosphère en 2019, et en quoi est-ce remarquable selon le GIEC ?",
+    "response": "La concentration de CO2 dans l'atmosphère en 2019 était de 410 parties par million. C'est remarquable car elle était supérieure à celle de tout moment des 2 millions d'années précédents, selon le GIEC.",
+    "exact_match": 1,
+    "keyword_score": 0.5,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 32.04
+  },
+  {
+    "id": "T05",
+    "category": "B",
+    "label": "Certitude — influence humaine sur extrêmes",
+    "question": "Est-il certain que les événements météorologiques extrêmes (vagues de chaleur, précipitations, cyclones) sont liés à l'influence humaine ? Utilise la terminologie du GIEC.",
+    "response": "Les extraits fournis ne permettent pas de répondre à cette question.",
+    "exact_match": 0,
+    "keyword_score": 0.0,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 2,
+    "latency_s": 16.49
+  },
+  {
+    "id": "T06",
+    "category": "B",
+    "label": "Conclusion — neutralité carbone",
+    "question": "Que faut-il atteindre en matière d'émissions de CO2 pour limiter le réchauffement climatique, selon la conclusion principale du rapport ?",
+    "response": "Selon les extraits fournis, il n'y a pas d'information spécifique sur l'objectif précis d'émissions de CO2 pour limiter le réchauffement climatique. Cependant, on peut déduire que la limite de 1,5°C est mentionnée dans le contexte des probabilités de limitation du réchauffement climatique.\n\nSelon les extraits, il est indiqué que si les émissions de CO2 entre 2020 et 2030 restent à un niveau similaire à celui de 2019, les cumulatives émissions de CO2 seraient presque exhaustives pour atteindre la limite de 1,5°C (50%), et plus de la moitié pour atteindre la limite de 2°C (67%).",
+    "exact_match": 0,
+    "keyword_score": 0.8,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 3,
+    "latency_s": 30.31
+  },
+  {
+    "id": "T07",
+    "category": "B",
+    "label": "Vulnérabilité — population exposée",
+    "question": "Combien de personnes vivent dans des contextes très vulnérables aux changements climatiques selon le rapport du GIEC 2023 ?",
+    "response": "Les extraits fournis ne permettent pas de répondre à cette question.",
+    "exact_match": 0,
+    "keyword_score": 0.0,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 2,
+    "latency_s": 16.0
+  }
+]

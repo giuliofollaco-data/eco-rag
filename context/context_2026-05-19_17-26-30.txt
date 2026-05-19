@@ -1,0 +1,515 @@
+[Page 20 — SPM]
+A.1.1 Global surface temperature was 1.09 [0.95 to 1.20]°C [5] higher in 2011–2020 than 1850–1900 [6], with larger increases
+
+over land (1.59 [1.34 to 1.83]°C) than over the ocean (0.88 [0.68 to 1.01]°C). Global surface temperature in the first two
+decades of the 21 [st ] century (2001–2020) was 0.99 [0.84 to 1.10]°C higher than 1850–1900. Global surface temperature
+has increased faster since 1970 than in any other 50-year period over at least the last 2000 years ( _high confidence_ ).
+{ _2.1.1, Figure 2.1_ }
+
+
+A.1.2 The _likely_ range of total human-caused global surface temperature increase from 1850–1900 to 2010–2019 [7] is 0.8°C to
+
+---
+
+[Page 40 — SPM]
+**(** _**high confidence**_ **). The choices and actions implemented in this decade will have impacts now**
+**and for thousands of years (** _**high confidence**_ **)** _**.**_ **{** _**3.1, 3.3, 4.1, 4.2, 4.3, 4.4, 4.7, 4.8, 4.9, Figure 3.1,**_
+_**Figure 3.3, Figure 4.2**_ **} (** _**Figure SPM.1, Figure SPM.6**_ **)**
+
+---
+
+[Page 61 — CORPS]
+**Current Status and Trends**
+
+
+**Emissions have grown in most regions but are distributed unevenly,**
+**both in the present day and cumulatively since 1850**
+
+
+a) **Historical cumulative net anthropogenic** b) **Net anthropogenic GHG emissions per capita**
+**CO2 emissions per region (1850–2019)** **and for total population, per region (2019)**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+d) **Regional indicators (2019) and regional production vs consumption accounting (2018)**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1 GDP per capita in 2019 in USD2017 currency purchasing power basis.
+2 Includes CO2FFI, CO2LULUCF and Other GHGs, excluding international aviation and shipping.
+
+---
+
+[Page 58 — CORPS]
+50-year period over at least the last 2000 years ( _high confidence_ ). The
+_likely_ range of total human-caused global surface temperature increase
+from 1850–1900 to 2010–2019 [66] is 0.8°C to 1.3°C, with a best estimate
+of 1.07°C. It is _likely_ that well-mixed GHGs [67] contributed a warming
+of 1.0°C to 2.0°C, and other human drivers (principally aerosols)
+contributed a cooling of 0.0°C to 0.8°C, natural (solar and volcanic)
+drivers changed global surface temperature by ±0.1°C and internal
+variability changed it by ±0.2°C. { _WGI SPM A.1, WGI SPM A.1.2,_
+_WGI SPM A.1.3, WGI SPM A.2.2, WGI Figure SPM.2; SRCCL TS.2_ }
+
+---
+
+[Page 98 — CORPS]
+126 See Annex I: Glossary.
+
+
+
+If the annual CO2 emissions between 2020–2030 stayed, on average,
+at the same level as 2019, the resulting cumulative emissions would
+almost exhaust the remaining carbon budget for 1.5°C (50%), and
+exhaust more than a third of the remaining carbon budget for 2°C
+(67%) (Figure 3.5). Based on central estimates only, historical cumulative
+net CO2 emissions between 1850 and 2019 (2400 ±240 GtCO2) amount
+to about four-fifths [131] of the total carbon budget for a 50% probability of
+limiting global warming to 1.5°C (central estimate about 2900 GtCO2) and
+to about two-thirds [132] of the total carbon budget for a 67% probability
+to limit global warming to 2°C (central estimate about 3550 GtCO2).
+{ _WGI Table SPM.2; WGIII SPM B.1.3, WGIII Table 2.1_ }
+
+---
+
+[Page 170 — CORPS]
+Sweden
+
+
+**PINO MAESO**, Alfonso
+
+Ministerio de la Transición Ecológica
+
+Spain
+
+
+**PLAISANCE**, Guillaume
+
+Bordeaux University
+
+France
+
+
+**PLANTON**, Serge
+
+Association Météo et Climat
+
+France
+
+
+**PLENCOVICH**, María Cristina
+
+Universidad de Buenos Aires
+
+Argentina
+
+
+**PLESNIK**, Jan
+
+Nature Conservation Agency of the Czech Republic
+
+Czech Republic
+
+
+**POLONSKY**, Alexander
+
+Institute of Natural Technical Systems
+
+Russian Federation
+
+---
+
+[Page 160 — CORPS]
+United Kingdom (of Great Britain and Northern Ireland)
+
+
+**ALSARMI**, Said
+
+Oman Civil Aviation Authority
+
+Oman
+
+
+**AMBRÓSIO**, Luis Alberto
+
+Instituto de Zootecnia
+
+Brazil
+
+
+**AMONI,** Alves Melina
+
+WayCarbon Soluções Ambientais e Projetos de Carbono Ltda
+
+Brazil
+
+
+**ANDRIANASOLO**, Rivoniony
+
+Ministère de l’Environnement et du Développement Durable
+
+Madagascar
+
+
+**144**
+
+
+
+**ANORUO**, Chukwuma
+
+University of Nigeria
+
+Nigeria
+
+
+**ANWAR RATEB**, Samy Ashraf
+
+Egyptian Meteorological Authority
+
+Egypt
+
+
+**APPADOO**, Chandani
+
+University of Mauritius
+
+Mauritius
+
+
+**ARAMENDIA**, Emmanuel
+
+University of Leeds
+
+United Kingdom (of Great Britain and Northern Ireland)
+
+
+**ASADNABIZADEH**, Majid
+
+UMCS
+
+Poland
+
+
+**ÁVILA ROMERO**, Agustín
+
+SEMARNAT
+
+Mexico
+
+
+**BADRUZZAMAN**, Ahmed
+
+---
+
+[Page 170 — CORPS]
+**PARRIQUE**, Timothée
+
+Université Clermont Auvergne
+
+France
+
+
+**PATTNAYAK**, Kanhu Charan
+
+Ministry of Sustainability and Environment
+
+Singapore
+
+
+**154**
+
+
+
+**PEIMANI**, Hooman
+
+International Institute for Asian Studies and Leiden University (The Netherlands)
+
+Canada
+
+
+**PELEJERO**, Carles
+
+ICREA and Institut de Ciències del Mar, CSIC
+
+Spain
+
+
+**PERUGINI**, Lucia
+
+Euro-Mediterranean Center on Climate Change
+
+Italy
+
+
+**PETERS**, Aribert
+
+Bund der Energieverbraucher e.V.
+
+Germany
+
+
+**PETERSON**, Bela
+
+coneva GmbH
+
+Germany
+
+
+**PETTERSSON**, Eva
+
+Royal Swedish Academy of Agriculture and Forestry
+
+Sweden
+
+
+**PINO MAESO**, Alfonso
+
+Ministerio de la Transición Ecológica
+
+Spain
+
+
+**PLAISANCE**, Guillaume
+
+Bordeaux University
+
+France
+
+
+**PLANTON**, Serge
+
+Association Météo et Climat
+
+France
+
+---
+
+[Page 168 — CORPS]
+France
+
+
+**MATHESON,** Shirley
+
+WWF EPO
+
+Belgium
+
+
+**MATHISON,** Camilla
+
+UK Met Office
+
+United Kingdom (of Great Britain and Northern Ireland)
+
+
+**MATKAR,** Ketna
+
+Cipher Environmental Solutions LLP
+
+India
+
+
+**152**
+
+
+
+**MBATU,** Richard
+
+University of South Florida
+
+United States of America
+
+
+**MCCABE**, David
+
+Clean Air Task Force
+
+United States of America
+
+
+**MCKINLEY**, Ian
+
+McKinley Consulting
+
+Switzerland
+
+
+**MERABET**, Hamza
+
+Ministère de l’Enseignement Supérieur et de la Recherche Scientifique
+
+Algeria
+
+
+**LUBANGO**, Louis Mitondo
+
+United Nations
+
+Ethiopia
+
+
+**MKUHLANI**, Siyabusa
+
+International Institute for Tropical Agriculture
+
+Kenya
+
+
+**MOKIEVSKY**, Vadim
+
+IO RAS
+
+Russian Federation
+
+
+**MOLINA**, Luisa
+
+Molina Center for Strategic Studies in Energy and the Environment
+
+---
+
+[Page 161 — CORPS]
+Germany
+
+
+**BRAVO**, Giangiacomo
+
+Linnaeus University
+
+Sweden
+
+
+**BROCKWAY**, Paul
+
+University of Leeds
+
+United Kingdom (of Great Britain and Northern Ireland)
+
+
+**BRUN**, Eric
+
+Ministère de la Transition Ecologique et Solidaire
+
+France
+
+
+**BRUNNER**, Cyril
+
+Institute of Atmospheric and Climate Science, ETH Zürich
+
+Switzerland
+
+
+**BUDINIS**, Sara
+
+International Energy Agency, Imperial College London
+
+France
+
+
+**BUTO**, Olga
+
+Wood Plc
+
+United Kingdom (of Great Britain and Northern Ireland)
+
+
+**CARDOSO**, Manoel
+
+Brazilian Institute for Space Research (INPE)
+
+Brazil
+
+
+**CASERINI**, Stefano
+
+Politecnico di Milano
+
+Italy
+
+
+**145**
