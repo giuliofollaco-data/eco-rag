@@ -2,7 +2,7 @@ from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 from vector import get_retrieved_context
 
-model = OllamaLLM(model="llama3.2")
+model = OllamaLLM(model="llama3.2", temperature=0.0)
 
 
 # ── 1. Prompt d'expansion de requête ───────────────────────────────────────────
@@ -17,7 +17,7 @@ une par ligne, sans numérotation, sans explication, sans texte autour.
 Les 3 requêtes doivent couvrir :
 1. La donnée précise demandée (chiffre, mesure, date)
 2. La conclusion générale du rapport sur ce sujet (résumé, bilan, certitude)
-3. Le niveau de confiance ou de certitude scientifique associé
+3. La même requête qu'en 1, traduite en anglais
 
 <|eot_id|><|start_header_id|>user<|end_header_id|>
 Question : {question}
@@ -37,33 +37,33 @@ Réponds à la question en utilisant UNIQUEMENT les extraits fournis dans la sec
 Règles strictes — respecte-les dans cet ordre de priorité :
 
 1. HIÉRARCHIE DES SOURCES
-   • Les extraits marqués [SPM] (Résumé pour Décideurs) représentent la \
+- Les extraits marqués [SPM] (Résumé pour Décideurs) représentent la \
 conclusion officielle et synthétique du rapport. Ils ont la priorité absolue \
 sur les extraits du [CORPS] pour toute affirmation générale ou conclusion.
-   • Les extraits du [CORPS] apportent le détail technique. Utilise-les pour \
+- Les extraits du [CORPS] apportent le détail technique. Utilise-les pour \
 préciser ou illustrer, jamais pour contredire le SPM.
 
 2. ARBITRAGE ENTRE CHIFFRES SIMILAIRES
-   • Si plusieurs valeurs proches apparaissent dans le contexte (ex : 1,07 / \
+- Si plusieurs valeurs proches apparaissent dans le contexte (ex : 1,07 / \
 1,1 / 1,15 °C), retiens UNIQUEMENT celle qui est explicitement présentée \
 comme la valeur de référence principale dans un extrait [SPM] ou dans la \
 phrase de conclusion d'un extrait [CORPS].
-   • Mentionne l'existence des autres valeurs en précisant leur signification \
+- Mentionne l'existence des autres valeurs en précisant leur signification \
 (ex : « valeur pour une période légèrement différente »).
 
-3. NIVEAU DE CONFIANCE
-   • Conserve systématiquement les qualificatifs du GIEC : \
-"confiance élevée", "confiance très élevée", "probabilité virtuelle", etc.
-   • Ne reformule pas ces termes techniques — ils ont une définition précise.
+3. TERMINOLOGIE DU GIEC
+- Niveaux de confiance : confiance très faible / faible / moyenne / élevée / très élevée
+- Probabilités : pratiquement certain / très probable / probable / aussi probable qu'improbable
+- Si les preuves se sont "renforcées depuis l'AR5", le mentionner explicitement.
 
 4. CITATION DES SOURCES
-   • Pour chaque affirmation chiffrée ou conclusion importante, indique \
+- Pour chaque affirmation chiffrée ou conclusion importante, indique \
 entre crochets la page source, ex : [p. 12, SPM].
 
 5. ABSENCE DE RÉPONSE
-   • Si la réponse n'est pas dans le contexte, réponds exactement :
-     "Les extraits fournis ne permettent pas de répondre à cette question."
-   • Ne fais jamais appel à tes connaissances externes.
+- Si la réponse n'est pas dans le contexte, réponds exactement :
+"Les extraits fournis ne permettent pas de répondre à cette question."
+- Ne fais jamais appel à tes connaissances externes.
 
 <|eot_id|><|start_header_id|>user<|end_header_id|>
 

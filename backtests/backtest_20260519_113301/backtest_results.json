@@ -1,0 +1,93 @@
+[
+  {
+    "id": "T01",
+    "category": "A",
+    "label": "Temp. 2011-2020 vs 1850-1900",
+    "question": "Quelle est l'augmentation de la température mondiale à la surface du globe observée sur la période 2011-2020 par rapport à 1850-1900 ?",
+    "response": "La surface temperature du globe a augmenté d'environ 1,09°C (avec une confiance de 95%) par rapport à la période 1850-1900.",
+    "exact_match": 0,
+    "keyword_score": 1.0,
+    "wrong_avoided": 0,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 3.31
+  },
+  {
+    "id": "T02",
+    "category": "A",
+    "label": "Émissions GES 2019",
+    "question": "Quel était le niveau des émissions mondiales nettes de gaz à effet de serre en 2019 selon le rapport ?",
+    "response": "Selon les données du GIEC (AR6 SYR), les émissions mondiales nettes de gaz à effet de serre en 2019 étaient de 59 ± 6,6 GtCO2-eq.",
+    "exact_match": 1,
+    "keyword_score": 1.0,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 1.01
+  },
+  {
+    "id": "T03",
+    "category": "A",
+    "label": "Élévation du niveau de la mer 1901-2018",
+    "question": "De combien le niveau moyen mondial de la mer a-t-il augmenté entre 1901 et 2018 ?",
+    "response": "Le niveau moyen mondial de la mer a augmenté de 0,20 m entre 1901 et 2018.",
+    "exact_match": 1,
+    "keyword_score": 0.8,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 0.72
+  },
+  {
+    "id": "T04",
+    "category": "A",
+    "label": "Concentration CO₂ atmosphérique 2019",
+    "question": "Quelle était la concentration de CO2 dans l'atmosphère en 2019, et en quoi est-ce remarquable selon le GIEC ?",
+    "response": "Selon les extraits fournis, la concentration de CO2 dans l'atmosphère en 2019 était de 410 parts par million (ppm). Cette concentration est considérée comme remarquable car elle est supérieure à celle de tout autre moment au cours des dernières 2 millions d'années (confiance élevée).\n\nEn effet, le GIEC mentionne que cette concentration de CO2 en 2019 était plus élevée que la concentration historique moyenne pour une période de référence de 800 000 ans, ce qui constitue un indicateur de l'impact des activités humaines sur l'environnement.",
+    "exact_match": 1,
+    "keyword_score": 1.0,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 1.85
+  },
+  {
+    "id": "T05",
+    "category": "B",
+    "label": "Certitude — influence humaine sur extrêmes",
+    "question": "Est-il certain que les événements météorologiques extrêmes (vagues de chaleur, précipitations, cyclones) sont liés à l'influence humaine ? Utilise la terminologie du GIEC.",
+    "response": "Selon le rapport de synthèse 2023 du Groupe d'experts intergouvernemental sur le changement climatique (GIEC), il existe une preuve à confiance élevée que les événements météorologiques extrêmes, tels que les vagues de chaleur, les précipitations et les cyclones, sont liés à l'influence humaine.\n\nEn effet, le rapport indique qu'il y a des preuves de très haute confiance (RFC2) pour affirmer que les événements météorologiques extrêmes sont causés ou aggravés par les activités humaines, telles que la déforestation, l'augmentation de la température globale et les changements dans les courants océaniques.\n\nLes recherches ont montré que les événements météorologiques extrêmes sont plus fréquents et plus sévères en raison des changements climatiques. Les vagues de chaleur, par exemple, sont devenues plus fréquentes et plus sévères, entraînant des impacts négatifs sur la santé humaine, les infrastructures et l'écosystème.\n\nIl est important de noter que les événements météorologiques extrêmes ne sont pas nécessaires pour provoquer les changements climatiques, mais ils peuvent aggraver leurs effets. Les changements climatiques sont causés ou aggravés par les activités humaines, tandis que les événements météorologiques extrêmes sont un effet secondaire de ces changements.\n\nEn résumé, les preuves suggèrent qu'il existe une lien établi entre les événements météorologiques extrêmes et l'influence humaine, avec des preuves à confiance élevée pour affirmer que les activités humaines sont la cause ou l'aggravante de ces événements.",
+    "exact_match": 1,
+    "keyword_score": 0.75,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 4.36
+  },
+  {
+    "id": "T06",
+    "category": "B",
+    "label": "Conclusion — neutralité carbone",
+    "question": "Que faut-il atteindre en matière d'émissions de CO2 pour limiter le réchauffement climatique, selon la conclusion principale du rapport ?",
+    "response": "D'après les extraits fournis, on peut lire :\n\n\"to be on the order of 1000 GtCO2\"\n\nC'est-à-dire que les émissions de CO2 devraient être inférieures à environ 1 000 Giga tonnes de CO2 pour limiter le réchauffement climatique.\n\nIl est important de noter que cela peut varier en fonction des facteurs régionaux et technologiques, mais 1 000 GtCO2 est une limite théorique pour limiter la montée du niveau de l'océan de 1,5°C.",
+    "exact_match": 0,
+    "keyword_score": 0.8,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 1.68
+  },
+  {
+    "id": "T07",
+    "category": "B",
+    "label": "Vulnérabilité — population exposée",
+    "question": "Combien de personnes vivent dans des contextes très vulnérables aux changements climatiques selon le rapport du GIEC 2023 ?",
+    "response": "Il n'y a pas d'information directe sur le nombre de personnes vivant dans des contextes très vulnérables aux changements climatiques dans les extraits fournis. Cependant, il est possible de faire une supposition basée sur l'accent mis par le rapport du GIEC 2023 sur la vulnérabilité et l'impact des changements climatiques sur les populations.\n\nSelon les extraits, le rapport du GIEC 2023 met l'accent sur l'importance de protéger les populations vulnérables aux changements climatiques. Cependant, il n'y a pas d'information spécifique sur le nombre de personnes qui vivent dans ces contextes.\n\nIl est possible que les extraits fournissent des statistiques ou des données sur les populations vulnérables, mais ce n'est pas explicitement mentionné. Les extraits semblent se concentrer plutôt sur l'approche scientifique et la mise en garde contre les impacts des changements climatiques.\n\nPar conséquent, je ne peux pas fournir une réponse précise au nombre de personnes vivant dans des contextes très vulnérables aux changements climatiques.",
+    "exact_match": 0,
+    "keyword_score": 0.5,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 2.73
+  }
+]

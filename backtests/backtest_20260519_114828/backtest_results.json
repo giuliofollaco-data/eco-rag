@@ -1,0 +1,93 @@
+[
+  {
+    "id": "T01",
+    "category": "A",
+    "label": "Temp. 2011-2020 vs 1850-1900",
+    "question": "Quelle est l'augmentation de la température mondiale à la surface du globe observée sur la période 2011-2020 par rapport à 1850-1900 ?",
+    "response": "L'augmentation de la température mondiale à la surface du globe observée sur la période 2011-2020 par rapport à 1850-1900 est de 1,1°C.",
+    "exact_match": 1,
+    "keyword_score": 0.8,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 1.08
+  },
+  {
+    "id": "T02",
+    "category": "A",
+    "label": "Émissions GES 2019",
+    "question": "Quel était le niveau des émissions mondiales nettes de gaz à effet de serre en 2019 selon le rapport ?",
+    "response": "Selon les extraits fournis, la valeur de reference principale est mentionnée dans l'extrait [SPM], page 19. \n\nLe GIEC indique que les émissions mondiales nettes de gaz à effet de serre en 2019 étaient estimées à 59 ± 6,6 GtCO2-eq, soit environ 12% supérieures aux émissions de 2010 et 54% supérieures à celles de 1990.",
+    "exact_match": 1,
+    "keyword_score": 1.0,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 3,
+    "latency_s": 1.45
+  },
+  {
+    "id": "T03",
+    "category": "A",
+    "label": "Élévation du niveau de la mer 1901-2018",
+    "question": "De combien le niveau moyen mondial de la mer a-t-il augmenté entre 1901 et 2018 ?",
+    "response": "Le niveau moyen mondial de la mer a augmenté de 0,20 m entre 1901 et 2018.",
+    "exact_match": 1,
+    "keyword_score": 0.8,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 2,
+    "latency_s": 0.68
+  },
+  {
+    "id": "T04",
+    "category": "A",
+    "label": "Concentration CO₂ atmosphérique 2019",
+    "question": "Quelle était la concentration de CO2 dans l'atmosphère en 2019, et en quoi est-ce remarquable selon le GIEC ?",
+    "response": "Selon les extraits fournis, la concentration de CO2 dans l'atmosphère en 2019 était de 410 parties par million (ppm). Cette valeur est considérée comme remarquable car elle est supérieure à celle de tout autre moment de l'histoire de la Terre au cours des dernières 2 millions d'années, avec une confiance élevée.",
+    "exact_match": 1,
+    "keyword_score": 1.0,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 1.31
+  },
+  {
+    "id": "T05",
+    "category": "B",
+    "label": "Certitude — influence humaine sur extrêmes",
+    "question": "Est-il certain que les événements météorologiques extrêmes (vagues de chaleur, précipitations, cyclones) sont liés à l'influence humaine ? Utilise la terminologie du GIEC.",
+    "response": "\"Très probable\". Les événements météorologiques extrêmes, tels que les vagues de chaleur, les précipitations, les cyclones, sont étroitement liés à l'influence humaine due au changement climatique. En effet, selon le rapport du GIEC (AR6 SYR), \"les intensifications des événements météorologiques extrêmes\" sont confirmées par des preuves solides et sont considérées comme une conséquence directe de la pollution du soleil, qui est étroitement liée aux émissions de gaz à effet de serre.",
+    "exact_match": 1,
+    "keyword_score": 0.5,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 3,
+    "latency_s": 1.6
+  },
+  {
+    "id": "T06",
+    "category": "B",
+    "label": "Conclusion — neutralité carbone",
+    "question": "Que faut-il atteindre en matière d'émissions de CO2 pour limiter le réchauffement climatique, selon la conclusion principale du rapport ?",
+    "response": "Selon les extraits fournis, il n'y a pas d'information précise sur la valeur exacte d'émissions de CO2 à atteindre pour limiter le réchauffement climatique. Cependant, selon l'extrait [Page 36 — SPM], les experts estiment que la capacité de stockage du carbone (CCS) devrait être \"de l'ordre de 1000 GtCO2\" pour limiter le réchauffement climatique à 1,5°C.",
+    "exact_match": 0,
+    "keyword_score": 0.8,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 3,
+    "latency_s": 1.48
+  },
+  {
+    "id": "T07",
+    "category": "B",
+    "label": "Vulnérabilité — population exposée",
+    "question": "Combien de personnes vivent dans des contextes très vulnérables aux changements climatiques selon le rapport du GIEC 2023 ?",
+    "response": "Les extraits fournis ne permettent pas de répondre à cette question. Il n'y a aucune information pertinente sur le nombre de personnes vivant dans des contextes très vulnérables aux changements climatiques dans les extraits fournis.",
+    "exact_match": 0,
+    "keyword_score": 0.25,
+    "wrong_avoided": 1,
+    "spm_retrieved": 1,
+    "llm_score": 4,
+    "latency_s": 0.91
+  }
+]
