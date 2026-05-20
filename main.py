@@ -7,6 +7,28 @@ from vector import get_retrieved_context
 
 model = OllamaLLM(model="llama3.2", temperature=0.0)
 
+# ── Prompt de traduction de question ─────────────────────────────────────────
+
+QUERY_TRANSLATION_TEMPLATE = """
+Tu es un traducteur expert en sciences du climat, spécialisé dans la terminologie \
+officielle du GIEC (IPCC).
+
+Ta tâche est de traduire la question de l'utilisateur du français vers l'anglais. \
+Cette traduction sera directement injectée dans un moteur de recherche hybride (dense + lexical).
+
+Règles strictes à respecter :
+1. Terminologie GIEC : Utilise rigoureusement le vocabulaire officiel du rapport de synthèse \
+(ex: utilise "contexts that are highly vulnerable", "low-emissions pathways", "climate-resilient \
+development", etc.).
+2. Pas de fioritures : Génère UNIQUEMENT la traduction de la question. Ne commence \
+jamais ta réponse par "Voici la traduction :", "Sure, here is the translation", ou \
+toute autre phrase d'introduction. Pas de commentaires.
+
+Question en français : {question}
+
+Traduction en anglais (Strictement la question seule) :
+"""
+
 # ── Prompt de génération de réponse ─────────────────────────────────────────
 
 ANSWER_TEMPLATE = """
@@ -57,6 +79,9 @@ QUESTION :
 Réponse en français :
 """
 
+query_translation_prompt = ChatPromptTemplate.from_template(QUERY_TRANSLATION_TEMPLATE)
+query_translation_chain = query_translation_prompt | model
+
 answer_prompt = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
 answer_chain = answer_prompt | model
 
@@ -77,9 +102,17 @@ if __name__ == "__main__":
         if question.lower() == "q":
             break
 
-        print("Recherche dans le rapport...")
-        context = get_retrieved_context(question)
+        # Traduction de la question pour le retrieval (.strip() pour éviter les espaces superflus)
+        question_translated = query_translation_chain.invoke(
+            {"question": question}
+        ).strip()
+        print(f"[INFO] Question traduite pour le retrieval : {question_translated}")
 
+        # Retrieval du contexte pertinent dans le rapport (stratégie hybride + injection SPM)
+        print("Recherche dans le rapport...")
+        context = get_retrieved_context(question_translated)
+
+        # Sauvegarde du contexte dans un fichier pour debug
         os.makedirs("context", exist_ok=True)
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         filename = f"context/context_{timestamp}.txt"
@@ -87,6 +120,7 @@ if __name__ == "__main__":
             f.write(context)
         print(f"[INFO] Contexte sauvegardé dans {filename}")
 
+        # Génération de la réponse à partir du contexte et de la question originale
         print("Génération de la réponse...\n")
         response = answer_chain.invoke({"context": context, "question": question})
         print(response)
