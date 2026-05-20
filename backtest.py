@@ -1,69 +1,108 @@
-import json
+import os
 import re
+import json
 import time
-import unicodedata
 from datetime import datetime
-from pathlib import Path
 
-BACKTESTS_ROOT = Path("backtests")
+import matplotlib
 
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import matplotlib.ticker as mticker
 import numpy as np
-from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama.llms import OllamaLLM
 
+from main import query_translation_chain, answer_chain
 from vector import get_retrieved_context
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 1. JEU DE TEST (GROUND TRUTH)
-# ══════════════════════════════════════════════════════════════════════════════
-# Sources : SPM A.1, A.1.1, A.1.2, A.1.3, A.1.4, A.2.1, A.2.2
-# Toutes les valeurs ont été vérifiées sur le PDF original.
+# ── Palette & style ─────────────────────────────────────────────────────────────
+
+STYLE = {
+    "bg": "#FFFFFF",
+    "grid": "#EEEEEE",
+    "text": "#1A1A2E",
+    "accent": "#2C5F8A",  # bleu principal
+    "accent2": "#4A90C4",  # bleu secondaire
+    "ok": "#2E7D32",  # vert (succès)
+    "warn": "#C0392B",  # rouge (échec)
+    "neutral": "#607D8B",  # gris bleu
+    "bar_palette": [
+        "#2C5F8A",
+        "#4A90C4",
+        "#76B0D4",
+        "#A8D1E7",
+        "#CFE9F5",
+        "#E8F4FD",
+        "#90A4AE",
+    ],
+}
+
+plt.rcParams.update(
+    {
+        "figure.facecolor": STYLE["bg"],
+        "axes.facecolor": STYLE["bg"],
+        "axes.edgecolor": STYLE["neutral"],
+        "axes.labelcolor": STYLE["text"],
+        "axes.titlecolor": STYLE["text"],
+        "axes.grid": True,
+        "grid.color": STYLE["grid"],
+        "grid.linewidth": 0.8,
+        "xtick.color": STYLE["text"],
+        "ytick.color": STYLE["text"],
+        "font.family": "sans-serif",
+        "font.size": 11,
+        "axes.titlesize": 13,
+        "axes.titleweight": "bold",
+    }
+)
+
+# ── Suite de tests ──────────────────────────────────────────────────────────────
+# Chaque cas définit :
+#   question          — question posée en français
+#   expected_values   — valeurs clés que la réponse DOIT mentionner (exact_match)
+#   expected_keywords — mots-clés thématiques attendus (keyword_score)
+#   wrong_values      — valeurs/affirmations erronées dont l'absence est vérifiée
 
 TEST_CASES = [
-    # ── Catégorie A : Confusion de données ────────────────────────────────────
     {
         "id": "T01",
         "category": "A",
         "label": "Temp. 2011-2020 vs 1850-1900",
         "question": (
-            "Quelle est l'augmentation de la température mondiale à la surface "
-            "du globe observée sur la période 2011-2020 par rapport à 1850-1900 ?"
+            "Quelle est l'augmentation de la température mondiale à la surface du globe "
+            "observée sur la période 2011-2020 par rapport à 1850-1900 ?"
         ),
-        # Valeur de synthèse SPM A.1 : 1,1 °C
-        # Pièges : A.1.1 donne 1,09°C (valeur précise), A.1.2 donne 1,07°C
-        # (période légèrement différente 2010-2019), 0,99°C (2001-2020).
-        "expected_values": ["1,1", "1.1"],
-        "wrong_values": ["1,07", "1.07", "1,09", "1.09", "0,99", "0.99"],
-        "keywords": ["température", "surface", "1850", "1900", "confiance"],
+        "expected_values": ["1.1", "1,1"],
+        "expected_keywords": ["température", "2011", "1850", "surface", "°C"],
+        "wrong_values": ["1.5°C", "2°C", "0.5°C", "1.07"],
     },
     {
         "id": "T02",
         "category": "A",
         "label": "Émissions GES 2019",
         "question": (
-            "Quel était le niveau des émissions mondiales nettes de gaz à effet "
-            "de serre en 2019 selon le rapport ?"
+            "Quel était le niveau des émissions mondiales nettes de gaz à effet de serre "
+            "en 2019 selon le rapport ?"
         ),
-        # SPM A.1.4 : 59 ± 6,6 GtCO2-eq
-        "expected_values": ["59"],
-        "wrong_values": [],
-        "keywords": ["59", "GtCO2", "2019", "émissions"],
+        "expected_values": ["59", "GtCO2"],
+        "expected_keywords": [
+            "émissions",
+            "2019",
+            "gaz à effet de serre",
+            "GES",
+            "net",
+        ],
+        "wrong_values": ["40 Gt", "70 Gt", "100 Gt"],
     },
     {
         "id": "T03",
         "category": "A",
         "label": "Élévation du niveau de la mer 1901-2018",
         "question": (
-            "De combien le niveau moyen mondial de la mer a-t-il augmenté "
-            "entre 1901 et 2018 ?"
+            "De combien le niveau moyen mondial de la mer a-t-il augmenté entre 1901 et 2018 ?"
         ),
-        # SPM A.2.1 : 0,20 [0,15 à 0,25] m
-        "expected_values": ["0,20", "0.20", "20 cm", "20"],
-        "wrong_values": [],
-        "keywords": ["niveau", "mer", "1901", "2018", "confiance élevée"],
+        "expected_values": ["0.20", "0,20", "20 cm"],
+        "expected_keywords": ["mer", "niveau", "1901", "2018", "mètre", "cm"],
+        "wrong_values": ["0.5 m", "1 mètre", "10 cm"],
     },
     {
         "id": "T04",
@@ -73,30 +112,33 @@ TEST_CASES = [
             "Quelle était la concentration de CO2 dans l'atmosphère en 2019, "
             "et en quoi est-ce remarquable selon le GIEC ?"
         ),
-        # SPM A.1.3 : 410 ppm, plus élevé qu'à n'importe quel moment des
-        # 2 derniers millions d'années (confiance élevée)
-        "expected_values": ["410"],
-        "wrong_values": [],
-        "keywords": ["410", "ppm", "millions d'années", "confiance élevée"],
+        "expected_values": ["410", "ppm"],
+        "expected_keywords": ["CO2", "concentration", "2019", "ppm", "sans précédent"],
+        "wrong_values": ["350 ppm", "500 ppm", "280 ppm"],
     },
-    # ── Catégorie B : Contresens scientifique ─────────────────────────────────
     {
         "id": "T05",
         "category": "B",
         "label": "Certitude — influence humaine sur extrêmes",
         "question": (
-            "Est-il certain que les événements météorologiques extrêmes "
-            "(vagues de chaleur, précipitations, cyclones) sont liés à "
-            "l'influence humaine ? Utilise la terminologie du GIEC."
+            "Est-il certain que les événements météorologiques extrêmes (vagues de chaleur, "
+            "précipitations, cyclones) sont liés à l'influence humaine ? "
+            "Utilise la terminologie du GIEC."
         ),
-        # SPM A.2.1 : "il est sans équivoque que l'influence humaine a réchauffé..."
-        # + "les preuves des observations des changements dans les extrêmes [...]
-        # et en particulier leur attribution à l'influence humaine, se sont
-        # encore renforcées depuis l'AR5" — conclusion : OUI, établi avec
-        # confiance élevée à très élevée selon le type d'extrême.
-        "expected_values": ["confiance", "renforcé", "influence humaine"],
-        "wrong_values": [],
-        "keywords": ["influence humaine", "extrêmes", "confiance", "renforcé"],
+        "expected_values": [
+            "très probable",
+            "confiance élevée",
+            "virtuellement certain",
+            "pratiquement certain",
+        ],
+        "expected_keywords": [
+            "extrêmes",
+            "influence humaine",
+            "vagues de chaleur",
+            "cyclones",
+            "probabilité",
+        ],
+        "wrong_values": ["aucun lien", "pas de preuve", "incertain"],
     },
     {
         "id": "T06",
@@ -106,562 +148,621 @@ TEST_CASES = [
             "Que faut-il atteindre en matière d'émissions de CO2 pour limiter "
             "le réchauffement climatique, selon la conclusion principale du rapport ?"
         ),
-        # SPM introduction : "limiter le réchauffement causé par l'homme nécessite
-        # des émissions nettes de CO2 nulles"
-        "expected_values": ["zéro", "net zéro", "net zero", "nulle", "nulles"],
+        "expected_values": [
+            "neutralité carbone",
+            "net zéro",
+            "net-zéro",
+            "zéro émission nette",
+        ],
+        "expected_keywords": [
+            "CO2",
+            "neutralité",
+            "1.5",
+            "2°C",
+            "émissions",
+            "limiter",
+        ],
         "wrong_values": [],
-        "keywords": ["CO2", "émissions", "zéro", "limiter", "réchauffement"],
     },
     {
         "id": "T07",
         "category": "B",
         "label": "Vulnérabilité — population exposée",
         "question": (
-            "Combien de personnes vivent dans des contextes très vulnérables "
-            "aux changements climatiques selon le rapport du GIEC 2023 ?"
+            "Combien de personnes vivent dans des contextes très vulnérables aux "
+            "changements climatiques selon le rapport du GIEC 2023 ?"
         ),
-        # SPM A.2.2 : 3,3 à 3,6 milliards de personnes
-        "expected_values": ["3,3", "3.3", "3,6", "3.6", "milliards", "billion"],
+        "expected_values": ["3.3", "3,3", "milliard", "billion"],
+        "expected_keywords": [
+            "vulnérable",
+            "personnes",
+            "population",
+            "contexte",
+            "risque",
+        ],
         "wrong_values": [],
-        "keywords": ["milliards", "vulnérable", "populations", "confiance élevée"],
+    },
+    {
+        "id": "T08",
+        "category": "C",
+        "label": "Limite d'adaptation — franchissement seuil",
+        "question": (
+            "Quels sont les exemples de limites dures à l'adaptation que le GIEC mentionne ?"
+        ),
+        "expected_values": [],
+        "expected_keywords": [
+            "limites",
+            "adaptation",
+            "dures",
+            "franchissement",
+            "seuil",
+            "irréversible",
+        ],
+        "wrong_values": ["aucune limite", "adaptation illimitée"],
+    },
+    {
+        "id": "T09",
+        "category": "C",
+        "label": "Financement climatique",
+        "question": (
+            "Quel écart existe-t-il entre les besoins de financement pour l'adaptation "
+            "climatique et les flux financiers actuels dans les pays en développement ?"
+        ),
+        "expected_values": [],
+        "expected_keywords": [
+            "financement",
+            "adaptation",
+            "lacune",
+            "écart",
+            "pays en développement",
+            "milliards",
+        ],
+        "wrong_values": [],
+    },
+    {
+        "id": "T10",
+        "category": "C",
+        "label": "Synergie ODD",
+        "question": (
+            "Comment les actions climatiques peuvent-elles créer des synergies "
+            "avec les objectifs de développement durable (ODD) ?"
+        ),
+        "expected_values": [],
+        "expected_keywords": [
+            "synergies",
+            "ODD",
+            "développement durable",
+            "co-bénéfices",
+            "santé",
+            "énergie",
+        ],
+        "wrong_values": [],
     },
 ]
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 2. CONFIGURATION DU LLM
-# ══════════════════════════════════════════════════════════════════════════════
+# ── Évaluation des métriques ────────────────────────────────────────────────────
 
-model = OllamaLLM(model="llama3.2", temperature=0.0)
+JUDGE_PROMPT = """
+Tu es un évaluateur expert du rapport GIEC AR6.
+Note la réponse ci-dessous sur une échelle de 1 à 5 selon les critères suivants :
 
-ANSWER_TEMPLATE = """\
-<|begin_of_text|><|start_header_id|>system<|end_header_id|>
+5 — Réponse complète, précise, bien sourcée, terminologie GIEC correcte.
+4 — Bonne réponse avec quelques imprécisions mineures ou sources partiellement citées.
+3 — Réponse partiellement correcte : éléments pertinents mais manque d'éléments clés ou imprécisions notables.
+2 — Réponse superficielle, hors sujet partiel, ou contient des approximations importantes.
+1 — Réponse incorrecte, inventée, ou hors sujet complet.
 
-Tu es un assistant expert en science du climat, spécialisé dans le rapport de \
-synthèse 2023 du GIEC (AR6 SYR).
+Question : {question}
+Réponse à évaluer : {response}
 
-Réponds à la question en utilisant UNIQUEMENT les extraits fournis dans la section "CONTEXTE".
-
-Règles strictes — respecte-les dans cet ordre de priorité :
-1. Les extraits [SPM] ont la priorité absolue sur les extraits [CORPS].
-2. Si plusieurs valeurs proches apparaissent, retiens celle présentée comme \
-valeur de référence principale dans un extrait [SPM].
-3. Conserve les qualificatifs du GIEC : "confiance élevée", "très probable", etc.
-4. Si la réponse n'est pas dans le contexte, réponds : \
-"Les extraits fournis ne permettent pas de répondre à cette question."
-
-<|eot_id|><|start_header_id|>user<|end_header_id|>
-
-CONTEXTE :
-{context}
-
----
-
-QUESTION :
-{question}
-
-Réponse en français :<|eot_id|><|start_header_id|>assistant<|end_header_id|>
-"""
-
-JUDGE_TEMPLATE = """\
-<|begin_of_text|><|start_header_id|>system<|end_header_id|>
-
-Tu es un évaluateur scientifique expert du rapport AR6 du GIEC.
-Note la réponse ci-dessous sur une échelle de 1 à 5 :
-  1 = incorrecte ou complètement hors sujet
-  2 = partiellement correcte mais contient des erreurs factuelles importantes
-  3 = correcte sur l'essentiel mais imprécise ou incomplète
-  4 = correcte, précise, avec les niveaux de confiance appropriés
-  5 = parfaite : valeur exacte, terminologie GIEC, source citée
-
-Réponds UNIQUEMENT avec un entier entre 1 et 5, sans aucune explication.
-
-<|eot_id|><|start_header_id|>user<|end_header_id|>
-
-QUESTION : {question}
-RÉPONSE ATTENDUE (référence) : {expected}
-RÉPONSE DU SYSTÈME : {response}
-
-Note (1-5) :<|eot_id|><|start_header_id|>assistant<|end_header_id|>
-"""
-
-answer_prompt = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
-judge_prompt = ChatPromptTemplate.from_template(JUDGE_TEMPLATE)
-answer_chain = answer_prompt | model
-judge_chain = judge_prompt | model
-
-# ══════════════════════════════════════════════════════════════════════════════
-# 3. FONCTIONS D'ÉVALUATION
-# ══════════════════════════════════════════════════════════════════════════════
+Réponds UNIQUEMENT avec un entier entre 1 et 5. Aucun commentaire, aucune explication.
+Score :"""
 
 
 def _normalize(text: str) -> str:
-    """Minuscule + suppression des accents pour la comparaison textuelle."""
-    nfkd = unicodedata.normalize("NFKD", text.lower())
-    return "".join(c for c in nfkd if not unicodedata.combining(c))
+    """Minuscule + suppression des accents pour comparaisons robustes."""
+    import unicodedata
+
+    text = text.lower()
+    return "".join(
+        c for c in unicodedata.normalize("NFD", text) if unicodedata.category(c) != "Mn"
+    )
 
 
 def compute_exact_match(response: str, expected_values: list[str]) -> int:
-    """1 si au moins une valeur attendue est trouvée dans la réponse."""
-    r = _normalize(response)
-    return int(any(_normalize(v) in r for v in expected_values))
+    """1 si AU MOINS UNE valeur attendue est présente dans la réponse, sinon 0."""
+    if not expected_values:
+        return 1  # pas de valeur cible définie → non pénalisé
+    resp_norm = _normalize(response)
+    return int(any(_normalize(v) in resp_norm for v in expected_values))
 
 
-def compute_keyword_score(response: str, keywords: list[str]) -> float:
-    """Fraction des mots-clés attendus présents dans la réponse."""
-    if not keywords:
+def compute_keyword_score(response: str, expected_keywords: list[str]) -> float:
+    """Fraction des mots-clés thématiques présents dans la réponse."""
+    if not expected_keywords:
         return 1.0
-    r = _normalize(response)
-    hits = sum(1 for kw in keywords if _normalize(kw) in r)
-    return round(hits / len(keywords), 3)
+    resp_norm = _normalize(response)
+    hits = sum(1 for kw in expected_keywords if _normalize(kw) in resp_norm)
+    return round(hits / len(expected_keywords), 2)
 
 
 def compute_wrong_avoided(response: str, wrong_values: list[str]) -> int:
-    """
-    1 si aucune valeur erronée n'est présentée comme réponse principale.
-    Heuristique : on vérifie que la valeur erronée n'apparaît pas dans les
-    100 premiers caractères de la réponse (là où le modèle annonce sa réponse).
-    """
+    """1 si AUCUNE valeur erronée n'est présente dans la réponse."""
     if not wrong_values:
-        return 1  # non applicable → score neutre
-    opening = _normalize(response[:250])
-    flagged = [v for v in wrong_values if _normalize(v) in opening]
-    return int(len(flagged) == 0)
+        return 1
+    resp_norm = _normalize(response)
+    return int(all(_normalize(w) not in resp_norm for w in wrong_values))
 
 
 def compute_spm_retrieved(context: str) -> int:
-    """1 si le contexte contient au moins un chunk tagué SPM."""
+    """1 si le contexte contient au moins un extrait étiqueté SPM."""
     return int("SPM" in context)
 
 
-def compute_llm_score(question: str, expected_values: list[str], response: str) -> int:
-    """LLM-as-judge : retourne un score 1-5."""
-    expected_str = " / ".join(expected_values) if expected_values else "voir mots-clés"
-    try:
-        raw = judge_chain.invoke(
-            {
-                "question": question,
-                "expected": expected_str,
-                "response": response,
-            }
-        ).strip()
-        match = re.search(r"[1-5]", raw)
-        return int(match.group()) if match else 3
-    except Exception:
-        return 3  # score neutre en cas d'erreur
+def compute_llm_score(question: str, response: str, model) -> int:
+    """LLM-as-judge : le modèle note la réponse de 1 à 5."""
+    from langchain_core.prompts import ChatPromptTemplate
+
+    prompt = ChatPromptTemplate.from_template(JUDGE_PROMPT)
+    chain = prompt | model
+    raw = chain.invoke({"question": question, "response": response}).strip()
+    # Extraction robuste d'un entier 1-5
+    match = re.search(r"[1-5]", raw)
+    return int(match.group()) if match else 3
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 4. RUNNER PRINCIPAL
-# ══════════════════════════════════════════════════════════════════════════════
+# ── Pipeline d'évaluation ───────────────────────────────────────────────────────
 
 
-def run_backtest() -> list[dict]:
-    """Exécute le backtest complet et retourne la liste des résultats."""
+def run_backtest(test_cases: list[dict], output_dir: str) -> list[dict]:
+    from langchain_ollama.llms import OllamaLLM
+
+    model = OllamaLLM(model="llama3.2", temperature=0.0)
+
     results = []
-    total = len(TEST_CASES)
+    total = len(test_cases)
 
-    print("\n" + "═" * 64)
-    print(f"  BACKTEST GIEC AR6 RAG — {total} cas de test")
-    print("═" * 64 + "\n")
+    for i, case in enumerate(test_cases, 1):
+        print(f"\n{'─'*55}")
+        print(f"  [{i}/{total}] {case['id']} — {case['label']}")
+        print(f"{'─'*55}")
 
-    for i, tc in enumerate(TEST_CASES, 1):
-        print(f"[{i}/{total}] {tc['id']} — {tc['label']}")
-        print(f"  Q : {tc['question'][:80]}...")
+        question = case["question"]
 
-        # ── Retrieval + réponse ──────────────────────────────────────────────
-        t0 = time.perf_counter()
-        context = get_retrieved_context(tc["question"], k=6)
-        response = answer_chain.invoke({"context": context, "question": tc["question"]})
-        latency = round(time.perf_counter() - t0, 2)
+        # ── Traduction de la question ──
+        question_en = query_translation_chain.invoke({"question": question}).strip()
+        print(f"  [EN] {question_en}")
 
-        # ── Calcul des métriques ─────────────────────────────────────────────
-        em = compute_exact_match(response, tc["expected_values"])
-        kw = compute_keyword_score(response, tc["keywords"])
-        wa = compute_wrong_avoided(response, tc["wrong_values"])
+        # ── Retrieval + mesure du temps de réponse ──
+        t0 = time.time()
+        context = get_retrieved_context(question_en)
+        response = answer_chain.invoke({"context": context, "question": question})
+        latency = round(time.time() - t0, 2)
+        print(f"  ⏱  Latence : {latency}s")
+
+        # ── Métriques ──
+        exact = compute_exact_match(response, case.get("expected_values", []))
+        kw_score = compute_keyword_score(response, case.get("expected_keywords", []))
+        avoided = compute_wrong_avoided(response, case.get("wrong_values", []))
         spm = compute_spm_retrieved(context)
-        llm = compute_llm_score(tc["question"], tc["expected_values"], response)
-
-        result = {
-            "id": tc["id"],
-            "category": tc["category"],
-            "label": tc["label"],
-            "question": tc["question"],
-            "response": response,
-            "exact_match": em,
-            "keyword_score": kw,
-            "wrong_avoided": wa,
-            "spm_retrieved": spm,
-            "llm_score": llm,
-            "latency_s": latency,
-        }
-        results.append(result)
+        llm_score = compute_llm_score(question, response, model)
 
         print(
-            f"  ✓ exact_match={em}  kw={kw:.2f}  wrong_avoided={wa}"
-            f"  spm={spm}  llm_score={llm}/5  latence={latency}s\n"
+            f"  exact_match={exact}  keyword={kw_score}  wrong_avoided={avoided}  "
+            f"spm={spm}  llm_score={llm_score}"
         )
+
+        results.append(
+            {
+                "id": case["id"],
+                "category": case["category"],
+                "label": case["label"],
+                "question": question,
+                "response": response,
+                "exact_match": exact,
+                "keyword_score": kw_score,
+                "wrong_avoided": avoided,
+                "spm_retrieved": spm,
+                "llm_score": llm_score,
+                "latency_s": latency,
+            }
+        )
+
+    # Sauvegarde JSON
+    json_path = os.path.join(output_dir, "results.json")
+    with open(json_path, "w", encoding="utf-8") as f:
+        json.dump(results, f, ensure_ascii=False, indent=2)
+    print(f"\n[✓] Résultats sauvegardés → {json_path}")
 
     return results
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 5. SAUVEGARDE JSON
-# ══════════════════════════════════════════════════════════════════════════════
+# ── Graphiques ──────────────────────────────────────────────────────────────────
 
 
-def create_backtest_dir() -> Path:
-    """Crée un dossier daté pour le backtest sous le répertoire backtests."""
-    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = BACKTESTS_ROOT / f"backtest_{ts}"
-    output_dir.mkdir(parents=True, exist_ok=True)
-    return output_dir
+def _save(fig: plt.Figure, path: str) -> None:  # type: ignore
+    fig.savefig(path, dpi=150, bbox_inches="tight", facecolor=STYLE["bg"])
+    plt.close(fig)
+    print(f"[✓] Graphique → {path}")
 
 
-def save_results(results: list[dict], output_dir: Path) -> Path:
-    path = output_dir / "backtest_results.json"
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
-    print(f"[INFO] Résultats sauvegardés → {path}")
-    return path
+def _short_label(label: str, max_len: int = 22) -> str:
+    return label if len(label) <= max_len else label[: max_len - 1] + "…"
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 6. VISUALISATIONS
-# ══════════════════════════════════════════════════════════════════════════════
+def plot_llm_scores(results: list[dict], output_dir: str) -> None:
+    labels = [r["id"] for r in results]
+    scores = [r["llm_score"] for r in results]
+    full_labels = [_short_label(r["label"]) for r in results]
 
-# Palette climatique : bleu arctique, bleu océan, rouge alerte, gris neutre
-CAT_COLORS = {"A": "#1d6fa4", "B": "#c0392b"}
-ACCENT = "#2ecc71"
-BG = "#0f1923"
-PANEL_BG = "#162230"
-TEXT = "#dce8f0"
-GRID = "#243447"
+    colors = [
+        STYLE["ok"] if s >= 4 else (STYLE["accent"] if s == 3 else STYLE["warn"])
+        for s in scores
+    ]
 
+    fig, ax = plt.subplots(figsize=(10, 5))
+    bars = ax.bar(labels, scores, color=colors, width=0.6, zorder=2)
 
-def _style_ax(ax):
-    ax.set_facecolor(PANEL_BG)
-    ax.tick_params(colors=TEXT, labelsize=9)
-    ax.xaxis.label.set_color(TEXT)
-    ax.yaxis.label.set_color(TEXT)
-    ax.title.set_color(TEXT)
-    for spine in ax.spines.values():
-        spine.set_edgecolor(GRID)
-
-
-def plot_results(results: list[dict], output_dir: Path) -> Path:
-    ids = [r["id"] for r in results]
-    labels = [r["label"] for r in results]
-    categories = [r["category"] for r in results]
-    n = len(results)
-
-    exact = np.array([r["exact_match"] for r in results], dtype=float)
-    kw = np.array([r["keyword_score"] for r in results], dtype=float)
-    wa = np.array([r["wrong_avoided"] for r in results], dtype=float)
-    spm = np.array([r["spm_retrieved"] for r in results], dtype=float)
-    llm = np.array([r["llm_score"] for r in results], dtype=float)
-    latency = np.array([r["latency_s"] for r in results], dtype=float)
-
-    colors = [CAT_COLORS[c] for c in categories]
-
-    fig = plt.figure(figsize=(18, 13), facecolor=BG)
-    fig.suptitle(
-        "Backtest — Système RAG GIEC AR6",
-        fontsize=17,
-        color=TEXT,
-        fontweight="bold",
-        y=0.97,
-    )
-
-    gs = fig.add_gridspec(
-        2, 2, hspace=0.48, wspace=0.38, left=0.07, right=0.97, top=0.92, bottom=0.06
-    )
-
-    # ── Fig 1 : Scores par question ──────────────────────────────────────────
-    ax1 = fig.add_subplot(gs[0, 0])
-    _style_ax(ax1)
-
-    # Score composite = moyenne de exact_match, kw, wrong_avoided, llm/5
-    composite = np.mean(np.column_stack([exact, kw, wa, llm / 5.0]), axis=1)
-    y_pos = np.arange(n)
-    bars = ax1.barh(
-        y_pos, composite, color=colors, height=0.6, edgecolor=BG, linewidth=0.5
-    )
-    ax1.set_yticks(y_pos)
-    ax1.set_yticklabels(
-        [f"{ids[i]}  {labels[i][:28]}" for i in range(n)], fontsize=8.5, color=TEXT
-    )
-    ax1.set_xlim(0, 1.15)
-    ax1.set_xlabel("Score composite [0-1]", color=TEXT)
-    ax1.set_title(
-        "① Score global par question",
-        color=TEXT,
-        fontsize=11,
-        fontweight="bold",
-        pad=10,
-    )
-    ax1.axvline(
-        composite.mean(),
-        color=ACCENT,
-        linewidth=1.5,
+    ax.set_ylim(0, 5.5)
+    ax.set_yticks([1, 2, 3, 4, 5])
+    ax.set_xlabel("Question")
+    ax.set_ylabel("Score LLM-as-judge (1–5)")
+    ax.set_title("Score LLM-as-judge par question")
+    ax.axhline(
+        np.mean(scores),  # type: ignore
+        color=STYLE["neutral"],
+        linewidth=1.4,
         linestyle="--",
-        label=f"Moy. {composite.mean():.2f}",
+        label=f"Moyenne : {np.mean(scores):.2f}",
+        zorder=3,
     )
-    ax1.legend(
-        fontsize=8,
-        labelcolor=TEXT,
-        facecolor=PANEL_BG,
-        edgecolor=GRID,
-        loc="lower right",
-    )
-    ax1.xaxis.set_major_formatter(mticker.PercentFormatter(xmax=1))
-    ax1.set_axisbelow(True)
-    ax1.grid(axis="x", color=GRID, linewidth=0.6)
 
-    # Étiquettes de valeur
-    for bar, val in zip(bars, composite):
-        ax1.text(
-            val + 0.01,
-            bar.get_y() + bar.get_height() / 2,
-            f"{val:.0%}",
-            va="center",
-            ha="left",
-            fontsize=8,
-            color=TEXT,
+    for bar, score, fl in zip(bars, scores, full_labels):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.1,
+            str(score),
+            ha="center",
+            va="bottom",
+            fontsize=10,
+            fontweight="bold",
+            color=STYLE["text"],
+        )
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            -0.45,
+            fl,
+            ha="center",
+            va="top",
+            fontsize=7.5,
+            color=STYLE["neutral"],
+            rotation=20,
         )
 
-    # Légende catégories
     patches = [
-        mpatches.Patch(color=v, label=f"Cat. {k}") for k, v in CAT_COLORS.items()
+        mpatches.Patch(color=STYLE["ok"], label="Score ≥ 4"),
+        mpatches.Patch(color=STYLE["accent"], label="Score = 3"),
+        mpatches.Patch(color=STYLE["warn"], label="Score ≤ 2"),
     ]
-    ax1.legend(
-        handles=patches,
-        fontsize=8,
-        labelcolor=TEXT,
-        facecolor=PANEL_BG,
-        edgecolor=GRID,
-        loc="lower right",
+    ax.legend(handles=patches + [ax.get_lines()[0]], loc="upper right", fontsize=9)
+    ax.tick_params(axis="x", bottom=False)
+    fig.tight_layout()
+    _save(fig, os.path.join(output_dir, "01_llm_scores.png"))
+
+
+def plot_latency(results: list[dict], output_dir: str) -> None:
+    labels = [r["id"] for r in results]
+    latencies = [r["latency_s"] for r in results]
+    mean_lat = np.mean(latencies)
+
+    colors = [
+        (
+            STYLE["ok"]
+            if l < mean_lat * 0.8
+            else (STYLE["warn"] if l > mean_lat * 1.3 else STYLE["accent2"])
+        )
+        for l in latencies
+    ]
+
+    fig, ax = plt.subplots(figsize=(10, 4.5))
+    ax.bar(labels, latencies, color=colors, width=0.6, zorder=2)
+    ax.axhline(
+        mean_lat,  # type: ignore
+        color=STYLE["neutral"],
+        linewidth=1.4,
+        linestyle="--",
+        label=f"Moyenne : {mean_lat:.1f}s",
+        zorder=3,
     )
 
-    # ── Fig 2 : Radar global ─────────────────────────────────────────────────
-    ax2 = fig.add_subplot(gs[0, 1], polar=True)
-    ax2.set_facecolor(PANEL_BG)
+    for x, lat in zip(labels, latencies):
+        ax.text(
+            x,
+            lat + 0.3,
+            f"{lat:.1f}s",
+            ha="center",
+            va="bottom",
+            fontsize=9,
+            color=STYLE["text"],
+        )
 
-    dimensions = [
-        "Exact\nMatch",
-        "Keyword\nScore",
-        "Erreur\nÉvitée",
-        "SPM\nRetrieval",
-        "LLM\nScore /5",
-    ]
-    global_scores = [
-        exact.mean(),
-        kw.mean(),
-        wa.mean(),
-        spm.mean(),
-        (llm / 5.0).mean(),
-    ]
-    angles = np.linspace(0, 2 * np.pi, len(dimensions), endpoint=False).tolist()
-    angles += angles[:1]
-    values = global_scores + global_scores[:1]
+    ax.set_xlabel("Question")
+    ax.set_ylabel("Latence (secondes)")
+    ax.set_title("Latence de réponse par question")
+    ax.legend(fontsize=9)
+    fig.tight_layout()
+    _save(fig, os.path.join(output_dir, "02_latency.png"))
 
-    ax2.set_theta_offset(np.pi / 2)
-    ax2.set_theta_direction(-1)
-    ax2.plot(angles, values, color="#1d6fa4", linewidth=2)
-    ax2.fill(angles, values, color="#1d6fa4", alpha=0.25)
-    ax2.set_xticks(angles[:-1])
-    ax2.set_xticklabels(dimensions, fontsize=9, color=TEXT)
-    ax2.set_ylim(0, 1)
-    ax2.set_yticks([0.25, 0.5, 0.75, 1.0])
-    ax2.set_yticklabels(["25%", "50%", "75%", "100%"], fontsize=7, color="#8aabbd")
-    ax2.grid(color=GRID, linewidth=0.6)
-    ax2.spines["polar"].set_color(GRID)
-    ax2.set_title(
-        "② Performance globale (toutes questions)",
-        color=TEXT,
-        fontsize=11,
-        fontweight="bold",
-        pad=18,
-        y=1.08,
+
+def plot_keyword_scores(results: list[dict], output_dir: str) -> None:
+    labels = [r["id"] for r in results]
+    scores = [r["keyword_score"] for r in results]
+    full_labels = [_short_label(r["label"]) for r in results]
+
+    fig, ax = plt.subplots(figsize=(10, 4.5))
+    bars = ax.bar(labels, scores, color=STYLE["accent"], width=0.6, zorder=2)
+
+    for bar, s, fl in zip(bars, scores, full_labels):
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            bar.get_height() + 0.01,
+            f"{s:.0%}",
+            ha="center",
+            va="bottom",
+            fontsize=9,
+            color=STYLE["text"],
+        )
+        ax.text(
+            bar.get_x() + bar.get_width() / 2,
+            -0.06,
+            fl,
+            ha="center",
+            va="top",
+            fontsize=7.5,
+            color=STYLE["neutral"],
+            rotation=20,
+        )
+
+    ax.axhline(
+        np.mean(scores),  # type: ignore
+        color=STYLE["neutral"],
+        linewidth=1.4,
+        linestyle="--",
+        label=f"Moyenne : {np.mean(scores):.0%}",
+        zorder=3,
     )
-    # Score central
-    ax2.text(
-        0,
-        0,
-        f"{np.mean(global_scores):.0%}",
-        ha="center",
-        va="center",
-        fontsize=18,
-        color=ACCENT,
-        fontweight="bold",
+    ax.set_ylim(0, 1.15)
+    ax.set_xlabel("Question")
+    ax.set_ylabel("Taux de correspondance")
+    ax.set_title("Keyword score par question")
+    ax.legend(fontsize=9)
+    ax.tick_params(axis="x", bottom=False)
+    fig.tight_layout()
+    _save(fig, os.path.join(output_dir, "03_keyword_scores.png"))
+
+
+def plot_exact_match(results: list[dict], output_dir: str) -> None:
+    labels = [r["id"] for r in results]
+    hits = [r["exact_match"] for r in results]
+    full_labels = [_short_label(r["label"]) for r in results]
+
+    colors = [STYLE["ok"] if h else STYLE["warn"] for h in hits]
+
+    fig, ax = plt.subplots(figsize=(10, 4))
+    ax.bar(labels, hits, color=colors, width=0.55, zorder=2)
+
+    for x, h, fl in zip(labels, hits, full_labels):
+        ax.text(
+            x,
+            h + 0.03,
+            "✓" if h else "✗",
+            ha="center",
+            va="bottom",
+            fontsize=13,
+            color=STYLE["ok"] if h else STYLE["warn"],
+        )
+        ax.text(
+            x,
+            -0.08,
+            fl,
+            ha="center",
+            va="top",
+            fontsize=7.5,
+            color=STYLE["neutral"],
+            rotation=20,
+        )
+
+    ok_total = sum(hits)
+    ax.set_ylim(0, 1.4)
+    ax.set_yticks([0, 1])
+    ax.set_yticklabels(["Absent (0)", "Présent (1)"])
+    ax.set_xlabel("Question")
+    ax.set_title(
+        f"Exact match — valeur clé présente dans la réponse "
+        f"({ok_total}/{len(hits)} réussites)"
     )
+    patches = [
+        mpatches.Patch(color=STYLE["ok"], label="Valeur trouvée"),
+        mpatches.Patch(color=STYLE["warn"], label="Valeur absente"),
+    ]
+    ax.legend(handles=patches, fontsize=9)
+    ax.tick_params(axis="x", bottom=False)
+    fig.tight_layout()
+    _save(fig, os.path.join(output_dir, "04_exact_match.png"))
 
-    # ── Fig 3 : Heatmap métriques × questions ────────────────────────────────
-    ax3 = fig.add_subplot(gs[1, 0])
-    _style_ax(ax3)
 
-    metric_labels = [
+def plot_radar(results: list[dict], output_dir: str) -> None:
+    metrics = [
+        "exact_match",
+        "keyword_score",
+        "wrong_avoided",
+        "spm_retrieved",
+        "llm_score",
+    ]
+    labels = [
         "Exact Match",
         "Keyword Score",
-        "Erreur Évitée",
-        "SPM Retrieval",
-        "LLM Score /5",
+        "Wrong\nAvoided",
+        "SPM\nRetrieved",
+        "LLM Score",
     ]
-    matrix = np.column_stack([exact, kw, wa, spm, llm / 5.0]).T  # (5, n)
+    raw = [np.mean([r[m] for r in results]) for m in metrics]
+    # Normalisation : llm_score est sur 5, les autres sur 1
+    norm = [v / 5 if m == "llm_score" else v for v, m in zip(raw, metrics)]
 
-    im = ax3.imshow(
-        matrix, aspect="auto", cmap="RdYlGn", vmin=0, vmax=1, interpolation="nearest"
+    n = len(metrics)
+    angles = np.linspace(0, 2 * np.pi, n, endpoint=False).tolist()
+    angles += angles[:1]
+    norm += norm[:1]
+
+    fig, ax = plt.subplots(figsize=(6, 6), subplot_kw={"polar": True})
+    ax.set_facecolor(STYLE["bg"])
+    fig.patch.set_facecolor(STYLE["bg"])
+
+    ax.plot(angles, norm, color=STYLE["accent"], linewidth=2.2, zorder=3)
+    ax.fill(angles, norm, color=STYLE["accent2"], alpha=0.25, zorder=2)
+
+    ax.set_xticks(angles[:-1])
+    ax.set_xticklabels(labels, fontsize=10, color=STYLE["text"])
+    ax.set_yticks([0.25, 0.5, 0.75, 1.0])
+    ax.set_yticklabels(
+        ["25%", "50%", "75%", "100%"], fontsize=8, color=STYLE["neutral"]
     )
-    cbar = fig.colorbar(im, ax=ax3, fraction=0.03, pad=0.04)
-    cbar.ax.tick_params(colors=TEXT, labelsize=8)
-    cbar.ax.yaxis.set_tick_params(color=TEXT)
-    cbar.outline.set_edgecolor(GRID)
+    ax.set_ylim(0, 1)
+    ax.grid(color=STYLE["grid"], linewidth=0.8)
+    ax.spines["polar"].set_color(STYLE["neutral"])
 
-    ax3.set_xticks(range(n))
-    ax3.set_xticklabels(ids, fontsize=9, color=TEXT)
-    ax3.set_yticks(range(len(metric_labels)))
-    ax3.set_yticklabels(metric_labels, fontsize=9, color=TEXT)
-    ax3.set_title(
-        "③ Heatmap métriques × questions",
-        color=TEXT,
-        fontsize=11,
+    # Annotations des valeurs brutes
+    for angle, nv, rv, m in zip(angles[:-1], norm[:-1], raw[:-1], metrics):
+        label_str = f"{rv:.2f}" if m == "llm_score" else f"{rv:.0%}"
+        ax.text(
+            angle,
+            nv + 0.07,  # type: ignore
+            label_str,
+            ha="center",
+            va="center",
+            fontsize=9,
+            color=STYLE["text"],
+            fontweight="bold",
+        )
+
+    ax.set_title(
+        "Métriques moyennes (normalisées)",
+        fontsize=13,
         fontweight="bold",
-        pad=10,
+        pad=18,
+        color=STYLE["text"],
     )
+    fig.tight_layout()
+    _save(fig, os.path.join(output_dir, "05_metrics_radar.png"))
 
-    for i in range(len(metric_labels)):
-        for j in range(n):
-            val = matrix[i, j]
-            ax3.text(
-                j,
-                i,
-                f"{val:.2f}",
+
+def plot_category_summary(results: list[dict], output_dir: str) -> None:
+    from collections import defaultdict
+
+    categories = sorted({r["category"] for r in results})
+    metrics = ["exact_match", "keyword_score", "wrong_avoided", "spm_retrieved"]
+    metric_labels = ["Exact Match", "Keyword Score", "Wrong Avoided", "SPM Retrieved"]
+
+    # Moyennes par catégorie
+    data: dict[str, list[float]] = defaultdict(lambda: [0.0] * len(metrics))
+    counts: dict[str, int] = defaultdict(int)
+    for r in results:
+        cat = r["category"]
+        counts[cat] += 1
+        for j, m in enumerate(metrics):
+            data[cat][j] += r[m]
+    for cat in categories:
+        data[cat] = [v / counts[cat] for v in data[cat]]
+
+    n_cats = len(categories)
+    n_metr = len(metrics)
+    x = np.arange(n_cats)
+    w = 0.18
+    offsets = np.linspace(-(n_metr - 1) * w / 2, (n_metr - 1) * w / 2, n_metr)
+
+    fig, ax = plt.subplots(figsize=(9, 5))
+    for j, (m_label, offset) in enumerate(zip(metric_labels, offsets)):
+        vals = [data[cat][j] for cat in categories]
+        bars = ax.bar(
+            x + offset,
+            vals,
+            width=w,
+            label=m_label,
+            color=STYLE["bar_palette"][j],
+            zorder=2,
+        )
+        for bar, v in zip(bars, vals):
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                bar.get_height() + 0.015,
+                f"{v:.0%}",
                 ha="center",
-                va="center",
-                fontsize=8,
-                color="white" if val < 0.45 or val > 0.75 else "#0f1923",
-                fontweight="bold",
+                va="bottom",
+                fontsize=7.5,
+                color=STYLE["text"],
             )
 
-    # ── Fig 4 : Latence ──────────────────────────────────────────────────────
-    ax4 = fig.add_subplot(gs[1, 1])
-    _style_ax(ax4)
-
-    x = np.arange(n)
-    bar_colors = [CAT_COLORS[c] for c in categories]
-    ax4.bar(x, latency, color=bar_colors, edgecolor=BG, linewidth=0.5, width=0.6)
-    ax4.axhline(
-        latency.mean(),
-        color=ACCENT,
-        linewidth=1.5,
-        linestyle="--",
-        label=f"Moy. {latency.mean():.1f}s",
-    )
-    ax4.set_xticks(x)
-    ax4.set_xticklabels(ids, fontsize=9, color=TEXT)
-    ax4.set_ylabel("Secondes", color=TEXT)
-    ax4.set_title(
-        "④ Latence par question (retrieval + génération)",
-        color=TEXT,
-        fontsize=11,
-        fontweight="bold",
-        pad=10,
-    )
-    ax4.legend(fontsize=8, labelcolor=TEXT, facecolor=PANEL_BG, edgecolor=GRID)
-    ax4.set_axisbelow(True)
-    ax4.grid(axis="y", color=GRID, linewidth=0.6)
-
-    for xi, lat in zip(x, latency):
-        ax4.text(xi, lat + 0.3, f"{lat:.1f}s", ha="center", fontsize=8, color=TEXT)
-
-    # Légende catégories (partagée fig 1 & 4)
-    patches = [
-        mpatches.Patch(
-            color=v,
-            label=f"Catégorie {k} — "
-            + ("Confusion de données" if k == "A" else "Contresens scientifique"),
-        )
-        for k, v in CAT_COLORS.items()
-    ]
-    fig.legend(
-        handles=patches,
-        loc="lower center",
-        ncol=2,
-        fontsize=9,
-        labelcolor=TEXT,
-        facecolor=PANEL_BG,
-        edgecolor=GRID,
-        framealpha=0.8,
-        bbox_to_anchor=(0.5, 0.005),
-    )
-
-    path = output_dir / "backtest_charts.png"
-    fig.savefig(path, dpi=150, bbox_inches="tight", facecolor=BG)
-    plt.close(fig)
-    print(f"[INFO] Graphiques sauvegardés → {path}")
-    return path
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"Catégorie {c}\n(n={counts[c]})" for c in categories])
+    ax.set_ylim(0, 1.2)
+    ax.set_ylabel("Score moyen")
+    ax.set_title("Synthèse des métriques par catégorie")
+    ax.legend(fontsize=9, loc="upper right")
+    fig.tight_layout()
+    _save(fig, os.path.join(output_dir, "06_category_summary.png"))
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 7. SYNTHÈSE CONSOLE
-# ══════════════════════════════════════════════════════════════════════════════
+# ── Récapitulatif terminal ──────────────────────────────────────────────────────
 
 
 def print_summary(results: list[dict]) -> None:
-    print("\n" + "═" * 64)
-    print("  SYNTHÈSE DU BACKTEST")
-    print("═" * 64)
-
-    metrics = {
-        "Exact Match (valeur de référence trouvée)": np.mean(
-            [r["exact_match"] for r in results]
-        ),
-        "Keyword Score (mots-clés scientifiques)": np.mean(
-            [r["keyword_score"] for r in results]
-        ),
-        "Erreur Évitée (valeur erronée non présentée)": np.mean(
-            [r["wrong_avoided"] for r in results]
-        ),
-        "SPM Retrieval (chunks SPM dans le contexte)": np.mean(
-            [r["spm_retrieved"] for r in results]
-        ),
-        "LLM Judge Score (auto-évaluation /5)": np.mean(
-            [r["llm_score"] for r in results]
-        ),
-        "Latence moyenne (s)": np.mean([r["latency_s"] for r in results]),
-    }
-
-    for name, value in metrics.items():
-        bar = "█" * int(value * 20) if value <= 1 else "█" * 20
-        print(f"  {name:<45} {value:>5.2f}  {bar}")
-
-    # Par catégorie
-    for cat in ["A", "B"]:
-        sub = [r for r in results if r["category"] == cat]
-        if not sub:
-            continue
-        label = "Confusion de données" if cat == "A" else "Contresens scientifique"
-        avg = np.mean([r["keyword_score"] for r in sub])
-        print(f"\n  Catégorie {cat} ({label}) — kw_score moyen : {avg:.2f}")
-        for r in sub:
-            status = "✓" if r["exact_match"] else "✗"
-            print(
-                f"    {status} {r['id']} {r['label'][:40]:<40} "
-                f"llm={r['llm_score']}/5  {r['latency_s']}s"
-            )
+    print("\n" + "═" * 55)
+    print("  RÉCAPITULATIF DU BACKTEST")
+    print("═" * 55)
+    metrics = [
+        "exact_match",
+        "keyword_score",
+        "wrong_avoided",
+        "spm_retrieved",
+        "llm_score",
+    ]
+    for m in metrics:
+        values = [r[m] for r in results]
+        mean = np.mean(values)
+        label = f"{m:<20}"
+        bar_len = int(mean / (5 if m == "llm_score" else 1) * 20)
+        bar = "█" * bar_len + "░" * (20 - bar_len)
+        fmt = f"{mean:.2f}/5" if m == "llm_score" else f"{mean:.0%}"
+        print(f"  {label}  {bar}  {fmt}")
+    total_t = sum(r["latency_s"] for r in results)
+    print(f"\n  Latence totale  : {total_t:.1f}s")
+    print(f"  Latence moyenne : {total_t/len(results):.1f}s / question")
+    print(f"  Questions       : {len(results)}")
+    print("═" * 55)
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# 8. POINT D'ENTRÉE
-# ══════════════════════════════════════════════════════════════════════════════
+# ── Point d'entrée ──────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    results = run_backtest()
-    output_dir = create_backtest_dir()
-    json_path = save_results(results, output_dir)
-    chart_path = plot_results(results, output_dir)
-    print_summary(results)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_dir = os.path.join("backtests", f"backtest_{timestamp}")
+    os.makedirs(output_dir, exist_ok=True)
 
-    print(f"\n  Dossier de sortie : {output_dir}")
-    print(f"  Fichiers générés :")
-    print(f"    • {json_path}")
-    print(f"    • {chart_path}")
+    print("=" * 55)
+    print(f"  BACKTEST RAG — GIEC AR6")
+    print(f"  Dossier de sortie : {output_dir}")
+    print("=" * 55)
+
+    results = run_backtest(TEST_CASES, output_dir)
+
+    print("\n[INFO] Génération des graphiques...")
+    plot_llm_scores(results, output_dir)
+    plot_latency(results, output_dir)
+    plot_keyword_scores(results, output_dir)
+    plot_exact_match(results, output_dir)
+    plot_radar(results, output_dir)
+    plot_category_summary(results, output_dir)
+
+    print_summary(results)
+    print(f"\n[✓] Tous les fichiers sont dans : {output_dir}/")
