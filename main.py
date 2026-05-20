@@ -1,3 +1,6 @@
+import os
+from datetime import datetime
+
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
 from vector import get_retrieved_context
@@ -76,6 +79,13 @@ if __name__ == "__main__":
 
         print("Recherche dans le rapport...")
         context = get_retrieved_context(question)
+
+        os.makedirs("context", exist_ok=True)
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"context/context_{timestamp}.txt"
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(context)
+        print(f"[INFO] Contexte sauvegardé dans {filename}")
 
         print("Génération de la réponse...\n")
         response = answer_chain.invoke({"context": context, "question": question})

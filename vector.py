@@ -26,6 +26,9 @@ CHUNK_OVERLAP = 200
 # Verification empirique : la page 55 (1-indexe) = 54 (0-indexe) marque
 # la fin du SPM. PyPDFLoader numerote a partir de 0.
 SPM_MAX_PAGE = 54
+START_PAGE = 18  # Page de debut du SPM (verification empirique)
+END_PAGE = 131  # Page de fin du corps du rapport (verification empirique)
+
 
 embeddings = OllamaEmbeddings(model="mxbai-embed-large")
 
@@ -49,6 +52,13 @@ def _load_and_split() -> List[Document]:
     print("[INFO] Chargement et decoupage du PDF (premiere fois, ~quelques minutes)...")
     loader = PyPDFLoader(PDF_PATH)
     documents = loader.load()
+
+    # Ne conserver que les pages 18 à 131 du PDF avant le découpage.
+    documents = [
+        doc
+        for doc in documents
+        if START_PAGE <= doc.metadata.get("page", -1) <= END_PAGE
+    ]
 
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
@@ -165,7 +175,7 @@ def get_retrieved_context(query: str, k: int = 5, max_chunks: int = 12) -> str:
     for doc in results[:max_chunks]:
         page = doc.metadata.get("page", "?")
         section = doc.metadata.get("section_type", "corps")
-        label = f"[Page {page} — {section.upper()}]"
+        label = f"[Page {page - 15} — {section.upper()}]"  # Ajustement empirique de la numérotation des pages
         parts.append(f"{label}\n{doc.page_content}")
 
     return "\n\n---\n\n".join(parts)
