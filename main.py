@@ -112,14 +112,6 @@ if __name__ == "__main__":
         print("Recherche dans le rapport...")
         context = get_retrieved_context(question_translated)
 
-        # Sauvegarde du contexte dans un fichier pour debug
-        os.makedirs("context", exist_ok=True)
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"context/context_{timestamp}.txt"
-        with open(filename, "w", encoding="utf-8") as f:
-            f.write(context)
-        print(f"[INFO] Contexte sauvegardé dans {filename}")
-
         # Génération de la réponse à partir du contexte et de la question originale
         print("Génération de la réponse...\n")
         response = answer_chain.invoke({"context": context, "question": question})

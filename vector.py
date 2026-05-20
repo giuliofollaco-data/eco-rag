@@ -132,7 +132,6 @@ def _deduplicate(docs: List[Document]) -> List[Document]:
         if key not in seen:
             seen.add(key)
             unique.append(doc)
-    print(f"[INFO] Deduplication : {len(docs)} -> {len(unique)} fragments.")
     return unique
 
 
@@ -143,8 +142,8 @@ def get_retrieved_context(query: str, k: int = 5, max_chunks: int = 12) -> str:
     """
     Stratégie de retrieval à deux niveaux :
 
-    Niveau 1 — Retrieval hybride (dense + BM25) sur la requête.
-    Niveau 2 — Injection de chunks SPM supplémentaires si le niveau 1 n'en a pas remonté assez
+    - Retrieval hybride (dense + BM25) sur la requête.
+    - Injection de chunks SPM supplémentaires si le retrieval n'en a pas remonté assez
     (garantit la présence des conclusions globales du rapport dans le contexte).
 
     Chaque chunk est préfixé de sa page et de sa section pour permettre
@@ -165,10 +164,8 @@ def get_retrieved_context(query: str, k: int = 5, max_chunks: int = 12) -> str:
                 results.append(doc)
                 existing_keys.add(doc.page_content[:120])
 
-    # Log info du nombre de fragments récupérés (anciennement dans gather_context)
-    print(
-        f"[INFO] {len(results)} fragments uniques récupérés (max {max_chunks} envoyés au LLM)."
-    )
+    # Log info du nombre de fragments récupérés
+    print(f"[INFO] {len(results)} fragments uniques récupérés.")
 
     # Formatage avec métadonnées sources (limité directement à max_chunks)
     parts = []
