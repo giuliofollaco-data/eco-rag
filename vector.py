@@ -172,7 +172,7 @@ def get_retrieved_context(query: str, k: int = 5, max_chunks: int = 12) -> str:
     for doc in results[:max_chunks]:
         page = doc.metadata.get("page", "?")
         section = doc.metadata.get("section_type", "corps")
-        label = f"[Page {page - 15} — {section.upper()}]"  # Ajustement empirique de la numérotation des pages
+        label = f"[p. {page - 15}, {section.upper()}]"  # Ajustement empirique de la numérotation
         parts.append(f"{label}\n{doc.page_content}")
 
     return "\n\n---\n\n".join(parts)

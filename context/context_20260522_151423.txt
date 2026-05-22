@@ -1,0 +1,137 @@
+[p. 4, SPM]
+Figure 2.2}
+A.1.1 Global surface temperature was 1.09 [0.95 to 1.20]°C 5 higher in 2011–2020 than 1850–1900 6, with larger increases 
+over land (1.59 [1.34 to 1.83]°C) than over the ocean (0.88 [0.68 to 1.01]°C). Global surface temperature in the first two 
+decades of the 21st century (2001–2020) was 0.99 [0.84 to 1.10]°C higher than 1850–1900. Global surface temperature 
+has increased faster since 1970 than in any other 50-year period over at least the last 2000 years ( high confidence). 
+{2.1.1, Figure 2.1}
+A.1.2  The likely range of total human-caused global surface temperature increase from 1850–1900 to 2010–20197 is 0.8°C to 
+1.3°C, with a best estimate of 1.07°C. Over this period, it is likely that well-mixed greenhouse gases (GHGs) contributed
+
+---
+
+[p. 42, CORPS]
+Section 2: Current Status and Trends
+2.1.1. Observed Warming and its Causes
+Global surface temperature was around 1.1°C above 1850–1900 in 
+2011–2020 (1.09 [0.95 to 1.20]°C) 64, with larger increases 
+over land (1.59 [1.34 to 1.83]°C) than over the ocean 
+(0.88 [0.68 to 1.01]°C)65. Observed warming is human-caused, with 
+warming from greenhouse gases (GHG), dominated by CO 2 and 
+methane (CH4), partly masked by aerosol cooling (Figure 2.1) . 
+Global surface temperature in the first two decades of the 21st century 
+(2001–2020) was 0.99 [0.84 to 1.10]°C higher than 1850–1900. Global 
+surface temperature has increased faster since 1970 than in any other 
+50-year period over at least the last 2000 years ( high confidence). The
+
+---
+
+[p. 42, CORPS]
+surface temperature has increased faster since 1970 than in any other 
+50-year period over at least the last 2000 years ( high confidence). The 
+likely range of total human-caused global surface temperature increase 
+from 1850–1900 to 2010–201966 is 0.8°C to 1.3°C, with a best estimate 
+of 1.07°C. It is likely that well-mixed GHGs 67 contributed a warming 
+of 1.0°C to 2. 0°C, and other human drivers (principally aerosols) 
+contributed a cooling of 0.0°C to 0.8°C, natural (solar and volcanic) 
+drivers changed global surface temperature by ±0.1°C and internal 
+variability changed it by ±0.2°C. {WGI SPM A.1, WGI SPM A.1.2, 
+WGI SPM A.1.3, WGI SPM A.2.2, WGI Figure SPM.2; SRCCL TS.2}
+Observed increases in well-mixed GHG concentrations since around
+
+---
+
+[p. 43, CORPS]
+(change from 1850–1900) 
+1.0
+0.2
+Global surface temperature has increased by 
+1.1°C by 2011-2020 compared to 1850-1900
+Concentrations of GHGs have increased rapidly since 1850
+(scaled to match their assessed contributions to warming over 1850–1900 
+to 2010–2019)
+Greenhouse gas (GHG) emissions resulting 
+from human activities continue to increase
+Human activities are responsible for global warming
+1850 1900 1950 2000 2020
+1850 1900 1950 2000 2019
+Non-CO 2  
+emissions
+CO 2  from 
+fossil fuels 
+and industry 
+Parts per million (ppm)
+GHG Emissions (GtCO 2 -eq/yr)
+Parts per billion (ppb)
+°C
+1850 1900 1950 2000 2019
+°C
+CO 2  from Land 
+Use, Land-Use 
+Change and 
+Forestry 
+(LULUCF)
+warmest multi-century 
+period in more 
+than 100,000 
+years
+410 ppm  CO 2
+1866 ppb  CH 4
+332  ppb  N2 O
+200
+
+---
+
+[p. 70, CORPS]
+70
+Section 3
+Section 1Section 3
+2011-2020 was 
+around 1.1°C warmer 
+than 1850-1900
+the last time global surface temperature was sustained 
+at or above 2.5°C was over 3 million years ago
+4°C
+The world at
+2°C
+The world at
+1.5°C+ +10
+The world at
+3°C
+The world at
+small absolute 
+changes may 
+appear large as 
+% or σ  changes 
+in dry regions
+urbanisation 
+further intensifies 
+heat extremes
+c) Annual wettest-day precipitation change
+Global warming level (GWL) above 1850-1900
+a) Annual hottest-day temperature change
+b) Annual mean total column soil moisture change
+°C
+Annual wettest day precipitation is projected to increase 
+in almost all continental regions, even in regions where 
+projected annual mean soil moisture declines.
+Annual hottest day temperature is projected to increase most
+
+---
+
+[p. 4, SPM]
+5 Ranges given throughout the SPM represent very likely ranges (5–95% range) unless otherwise stated.
+6 The estimated increase in global surface temperature since AR5 is principally due to further warming since 2003–2012 (0.19 [0.16 to 0.22]°C). Additionally, 
+methodological advances and new datasets have provided a more complete spatial representation of changes in surface temperature, including in the 
+Arctic. These and other improvements have also increased the estimate of global surface temperature change by approximately 0.1°C, but this increase 
+does not represent additional physical warming since AR5.
+7 The period distinction with A.1.1 arises because the attribution studies consider this slightly earlier period. The observed warming to 2010–2019 
+is 1.06 [0.88 to 1.21]°C.
+
+---
+
+[p. 83, CORPS]
+planned fossil fuel infrastructures (in GtCO2). For remaining carbon budgets, thin lines indicate the uncertainty due to the contribution of non-CO2 warming. For lifetime emissions from 
+fossil fuel infrastructure, thin lines indicate the assessed sensitivity range. Panel (b) Relationship between cumulative CO2 emissions and the increase in global surface temperature. 
+Historical data (thin black line) shows historical CO2 emissions versus observed global surface temperature increase relative to the period 1850-1900. The grey range with its central 
+line shows a corresponding estimate of the human-caused share of historical warming. Coloured areas show the assessed very likely range of global surface temperature projections,
