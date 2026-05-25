@@ -47,26 +47,36 @@ sur les extraits du [CORPS] pour toute affirmation générale ou conclusion.
 préciser ou illustrer, jamais pour contredire le SPM.
 
 2. ARBITRAGE ENTRE CHIFFRES SIMILAIRES
-- Si plusieurs valeurs proches apparaissent dans le contexte (ex : 1,07 / \
-1,1 / 1,15 °C), retiens UNIQUEMENT celle qui est explicitement présentée \
-comme la valeur de référence principale dans un extrait [SPM] ou dans la \
-phrase de conclusion d'un extrait [CORPS].
-- Mentionne l'existence des autres valeurs en précisant leur signification \
-(ex : « valeur pour une période légèrement différente »).
+- Si plusieurs valeurs proches apparaissent dans le contexte, retiens UNIQUEMENT celle \
+qui est de référence.
 
 3. TERMINOLOGIE DU GIEC
-- Niveaux de confiance : confiance très faible / faible / moyenne / élevée / très élevée
-- Probabilités : pratiquement certain / très probable / probable / aussi probable qu'improbable
-- Si les preuves se sont "renforcées depuis l'AR5", le mentionner explicitement.
+- Mentionne explicitement les niveaux de confiance ("haute confiance", etc.) et les probabilités.
 
 4. CITATION DES SOURCES
-- Pour chaque affirmation chiffrée ou conclusion importante, indique \
-entre crochets la page source, ex : [p. 12, SPM].
+- Pour chaque affirmation ou conclusion, indique systématiquement \
+en toute fin de phrase le tag exact de la page source entre crochets, tel qu'il apparaît dans le texte (ex : [Page 10 — SPM]).
 
 5. ABSENCE DE RÉPONSE
 - Si la réponse n'est pas dans le contexte, réponds exactement :
 "Les extraits fournis ne permettent pas de répondre à cette question."
-- Ne fais jamais appel à tes connaissances externes.
+
+---
+EXEMPLE DE RÉPONSE ATTENDUE (Modèle à suivre obligatoirement) :
+
+CONTEXTE D'EXEMPLE :
+[Page 10 — SPM]
+Policies and laws addressing mitigation have consistently expanded since AR5. Global GHG \
+emissions in 2030 implied by nationally determined contributions (NDCs) announced by October \
+2021 make it likely that warming will exceed 1.5°C during the 21st century and make it harder \
+to limit warming below 2°C. There are gaps between projected emissions from implemented \
+policies and those from NDCs and finance flows fall short of the levels needed to meet climate \
+goals across all sectors and regions. (high confidence)
+
+QUESTION D'EXEMPLE : Quelles sont les projections de réchauffement liées aux engagements (NDCs) d'octobre 2021 ?
+RÉPONSE D'EXEMPLE : Selon les contributions déterminées au niveau national (NDCs) annoncées par octobre 2021, il est probable que le réchauffement dépasse 1,5°C au cours du XXIe siècle et il sera plus difficile de le limiter en dessous de 2°C (haute confiance) [Page 10 — SPM].
+
+---
 
 CONTEXTE :
 {context}
@@ -85,14 +95,9 @@ query_translation_chain = query_translation_prompt | model
 answer_prompt = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
 answer_chain = answer_prompt | model
 
-
 # ── Boucle principale ───────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    print("-" * 50)
-    print("  Assistant GIEC AR6")
-    print("-" * 50)
-
     while True:
         question = input(
             "\nVotre question sur le rapport du GIEC AR6 ('q' pour quitter) : "
