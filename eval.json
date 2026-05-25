@@ -1,0 +1,32 @@
+[
+    {
+        "id": "1",
+        "question": "Quelle est l'augmentation de la température mondiale à la surface du globe observée sur la période 2011-2020 par rapport à 1850-1900 ?",
+        "reference": "L'augmentation de la température mondiale à la surface du globe observée sur la période 2011-2020 par rapport à 1850-1900 est de 1,1 °C (ou plus précisément 1,09 [0,95 à 1,20] °C). Le réchauffement est plus important sur les terres (1,59 [1,34 à 1,83] °C) que sur les océans (0,88 [0,68 à 1,01] °C). [Page 4, SPM.A.1 & A.1.1 ; Figure SPM.1, p. 7]",
+        "difficulty": "2"
+    },
+    {
+        "id": "2",
+        "question": "Quel était le niveau des émissions mondiales nettes de gaz à effet de serre en 2019 selon le rapport ?",
+        "reference": "Selon le rapport, les émissions mondiales nettes de gaz à effet de serre (GES) d'origine anthropique s'élevaient à 59 ± 6,6 GtCO2-eq en 2019. Ce niveau est environ 12 % plus élevé qu'en 2010 et 54 % plus élevé qu'en 1990. [Page 4, SPM.A.1.4]",
+        "difficulty": "2"
+    },
+    {
+        "id": "3",
+        "question": "Est-il certain que les événements météorologiques extrêmes (vagues de chaleur, précipitations, cyclones) sont liés à l'influence humaine ? Utilise la terminologie du GIEC.",
+        "reference": "Oui, l'attribution des événements météorologiques extrêmes observés à l'influence humaine s'est renforcée depuis l'AR5. Selon la terminologie du GIEC : 1. Il est pratiquement certain (virtually certain) que l'influence humaine est le principal moteur de l'augmentation de la fréquence et de l'intensité des extrêmes chauds (vagues de chaleur) à l'échelle mondiale. 2. Il est probable (likely) que l'influence humaine a augmenté la probabilité d'événements extrêmes composites depuis les années 1950 (comme les vagues de chaleur et sécheresses simultanées, avec une confiance élevée), et qu'elle est le principal moteur de l'augmentation globale des précipitations extrêmes (fortes précipitations) et de l'activité des cyclones tropicaux intenses. [Page 5, SPM.A.2.1 ; Figure SPM.1 (b), p. 7]",
+        "difficulty": "3"
+    },
+    {
+        "id": "4",
+        "question": "Quel écart existe-t-il entre les besoins de financement pour l'adaptation climatique et les flux financiers actuels dans les pays en développement ?",
+        "reference": "Il existe un écart significatif et des disparités croissantes (widening disparities) entre les coûts estimés de l'adaptation et les financements alloués. Les flux financiers actuels pour l'adaptation sont largement insuffisants et freinent la mise en œuvre des options d'adaptation, en particulier dans les pays en développement (confiance élevée). La grande majorité des financements climatiques suivis reste dirigée vers l'atténuation (confiance très élevée). À titre d'illustration, pour l'Afrique, les flux financiers annuels alloués à l'adaptation sont inférieurs de plusieurs milliards de dollars (billions of USD) aux estimations les plus basses des coûts de l'adaptation à court terme (confiance élevée). [Page 9, SPM.A.3.6 ; Page 62, Rapport.2.3.3 ; Page 127, Rapport.4.8.1]",
+        "difficulty": "3"
+    },
+    {
+        "id": "5",
+        "question": "Selon les graphiques du rapport de synthèse comparant les trajectoires d'émissions mondiales de gaz à effet de serre avec les politiques actuelles, à quelle catégorie de scénarios (et à quelle couleur de courbe ou de faisceau) correspond la trajectoire associée aux politiques effectivement mises en œuvre à la fin de l'année 2020 ?",
+        "reference": "Sur les graphiques du rapport (comme la Figure SPM.5), la trajectoire associée aux politiques effectivement mises en œuvre à la fin de l'année 2020 est représentée par le faisceau/plage rouge (ou courbe rouge). Elle correspond aux catégories de scénarios C5 à C7 (29 scénarios modélisés dans ces catégories), décrivant des trajectoires d'émissions avec les politiques actuelles qui limitent le réchauffement global entre 2,5 °C et 4 °C. Sans renforcement des politiques, cette trajectoire projette un réchauffement global de 3,2 °C (plage de 2,2 °C à 3,5 °C) d'ici 2100 (confiance moyenne). [Figure SPM.5, p. 23 & 39 ; Figure 2.5, p. 75 ; Box SPM.1 Table 1, p. 26]",
+        "difficulty": "5"
+    }
+]
