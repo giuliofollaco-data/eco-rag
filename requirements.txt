@@ -3,5 +3,7 @@ langchain-ollama
 langchain-chroma
 langchain-community
 langchain-text-splitters
+langchain-classic
 pypdf
 rank-bm25
+streamlit
