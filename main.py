@@ -74,6 +74,7 @@ policies and those from NDCs and finance flows fall short of the levels needed t
 goals across all sectors and regions. (high confidence)
 
 QUESTION D'EXEMPLE : Quelles sont les projections de réchauffement liées aux engagements (NDCs) d'octobre 2021 ?
+
 RÉPONSE D'EXEMPLE : Selon les contributions déterminées au niveau national (NDCs) annoncées par octobre 2021, \
 il est probable que le réchauffement dépasse 1,5°C au cours du XXIe siècle et il sera plus difficile de le \
 limiter en dessous de 2°C (haute confiance) [Page 10 — SPM].
@@ -97,14 +98,9 @@ query_translation_chain = query_translation_prompt | model
 answer_prompt = ChatPromptTemplate.from_template(ANSWER_TEMPLATE)
 answer_chain = answer_prompt | model
 
-
 # ── Boucle principale ───────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    print("-" * 50)
-    print("  Assistant GIEC AR6")
-    print("-" * 50)
-
     while True:
         question = input(
             "\nVotre question sur le rapport du GIEC AR6 ('q' pour quitter) : "
